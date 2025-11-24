@@ -2,6 +2,7 @@ package es.luigi.chefsitoLuigi.Exception;
 
 import lombok.*;
 import java.time.Instant;
+import java.util.Map;
 
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
 public class ApiError {
@@ -10,4 +11,5 @@ public class ApiError {
     private String error;
     private String message;
     private String path;
+    private Map<String, String> validationErrors; // Nuevo campo para errores de validación
 }

@@ -12,11 +12,15 @@ import java.time.LocalDate;
 @Entity
 @Table(name = "ingredients")
 public class Ingredient {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable=false)
     private String name;
+
+    // NUEVO: Nombre en español
+    private String nameEs;
 
     private String unit; // e.g. g, ml, unidad
 
@@ -26,5 +30,3 @@ public class Ingredient {
 
     private LocalDate expiryDate;
 }
-
-

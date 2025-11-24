@@ -24,12 +24,30 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     FilterChain filterChain) throws ServletException, IOException {
 
         String token = tokenProvider.resolveToken(request);
-        if (token != null && tokenProvider.validateToken(token)) {
-            var username = tokenProvider.getUsername(token);
-            var userDetails = userDetailsService.loadUserByUsername(username);
-            var auth = tokenProvider.getAuthentication(token, userDetails);
-            SecurityContextHolder.getContext().setAuthentication(auth);
+        System.out.println("🔍 JWT Filter - Token encontrado: " + (token != null));
+
+        if (token != null) {
+            System.out.println("🔍 Validando token...");
+            boolean isValid = tokenProvider.validateToken(token);
+            System.out.println("🔍 Token válido: " + isValid);
+
+            if (isValid) {
+                var username = tokenProvider.getUsername(token);
+                System.out.println("🔍 Usuario del token: " + username);
+
+                try {
+                    var userDetails = userDetailsService.loadUserByUsername(username);
+                    var auth = tokenProvider.getAuthentication(token, userDetails);
+
+                    System.out.println("🔍 Authentication creada con authorities: " + auth.getAuthorities());
+                    SecurityContextHolder.getContext().setAuthentication(auth);
+                    System.out.println("✅ Authentication establecida en SecurityContext");
+                } catch (Exception e) {
+                    System.out.println("❌ Error cargando userDetails: " + e.getMessage());
+                }
+            }
         }
+
         filterChain.doFilter(request, response);
     }
 }

@@ -1,12 +1,16 @@
 package es.luigi.chefsitoLuigi.Mapper;
+
 import es.luigi.chefsitoLuigi.Dto.RecipeDto;
 import es.luigi.chefsitoLuigi.Entity.Recipe;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.factory.Mappers;
 
-@Mapper(componentModel = "spring", uses = {IngredientMapper.class})
+@Mapper(componentModel = "spring")
 public interface RecipeMapper {
-    RecipeDto toDto(Recipe r);
-    // toEntity is created in service (requires ingredient lookup)
+
+    @Mapping(source = "preparationTime", target = "preparationMinutes")
+    RecipeDto toDto(Recipe recipe);
+
+    @Mapping(source = "preparationMinutes", target = "preparationTime")
+    Recipe toEntity(RecipeDto dto);
 }

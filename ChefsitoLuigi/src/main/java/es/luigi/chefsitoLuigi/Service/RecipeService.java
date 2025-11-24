@@ -1,14 +1,15 @@
 package es.luigi.chefsitoLuigi.Service;
-import es.luigi.chefsitoLuigi.Dto.RecipeDto;
-import es.luigi.chefsitoLuigi.Dto.RecipeCreateRequest;
+
+import es.luigi.chefsitoLuigi.Entity.Recipe;
 import java.util.List;
+import java.util.Optional;
 
 public interface RecipeService {
-    RecipeDto create(RecipeCreateRequest req);
-    RecipeDto update(Long id, RecipeCreateRequest req);
-    RecipeDto findById(Long id);
-    List<RecipeDto> findAll();
-    void delete(Long id);
-    List<RecipeDto> findByDiet(String dietTag);
-    List<RecipeDto> findByMaxTime(int minutes);
+    List<Recipe> getUserRecipeHistory(Long userId);
+    List<Recipe> findByCategory(String category);
+    List<Recipe> findByDifficulty(String difficulty);
+    List<Recipe> findByMaxTime(Integer maxTime);
+    List<Recipe> searchByTitle(String title);
+    Optional<Recipe> findById(Long id);
+    List<Recipe> findAll(); // Método agregado
 }

@@ -1,14 +1,17 @@
 package es.luigi.chefsitoLuigi.Controller;
 
-import es.luigi.chefsitoLuigi.Dto.*;
+import es.luigi.chefsitoLuigi.Dto.RecipeDto;
+import es.luigi.chefsitoLuigi.Entity.Recipe;
+import es.luigi.chefsitoLuigi.Exception.ResourceNotFoundException;
+import es.luigi.chefsitoLuigi.Mapper.RecipeMapper;
 import es.luigi.chefsitoLuigi.Service.RecipeService;
-import es.luigi.chefsitoLuigi.Service.RecommendationService;
 import io.swagger.v3.oas.annotations.Operation;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/recipes")
@@ -16,35 +19,68 @@ import java.util.List;
 public class RecipeController {
 
     private final RecipeService recipeService;
-    private final RecommendationService recommendationService;
+    private final RecipeMapper recipeMapper;
 
-    @Operation(summary = "Crear receta")
-    @PostMapping
-    public ResponseEntity<RecipeDto> create(@Valid @RequestBody RecipeCreateRequest req) {
-        return ResponseEntity.status(201).body(recipeService.create(req));
+    // Operaciones con Entity (para OpenAI e historial)
+    @Operation(summary = "Obtener historial de recetas recomendadas para un usuario")
+    @GetMapping("/history/{userId}")
+    public ResponseEntity<List<Recipe>> getRecipeHistory(@PathVariable Long userId) {
+        List<Recipe> history = recipeService.getUserRecipeHistory(userId);
+        return ResponseEntity.ok(history);
     }
 
-    @Operation(summary = "Listar recetas")
-    @GetMapping
-    public ResponseEntity<List<RecipeDto>> list() {
-        return ResponseEntity.ok(recipeService.findAll());
+    @Operation(summary = "Buscar recetas por categoría")
+    @GetMapping("/category/{category}")
+    public ResponseEntity<List<Recipe>> getRecipesByCategory(@PathVariable String category) {
+        List<Recipe> recipes = recipeService.findByCategory(category);
+        return ResponseEntity.ok(recipes);
     }
 
-    @Operation(summary = "Filtrar por dieta")
-    @GetMapping("/diet/{tag}")
-    public ResponseEntity<List<RecipeDto>> byDiet(@PathVariable String tag) {
-        return ResponseEntity.ok(recipeService.findByDiet(tag));
+    @Operation(summary = "Buscar recetas por dificultad")
+    @GetMapping("/difficulty/{difficulty}")
+    public ResponseEntity<List<Recipe>> getRecipesByDifficulty(@PathVariable String difficulty) {
+        List<Recipe> recipes = recipeService.findByDifficulty(difficulty);
+        return ResponseEntity.ok(recipes);
     }
 
-    @Operation(summary = "Filtrar por tiempo máximo (minutos)")
-    @GetMapping("/time")
-    public ResponseEntity<List<RecipeDto>> byTime(@RequestParam int maxMinutes) {
-        return ResponseEntity.ok(recipeService.findByMaxTime(maxMinutes));
+    @Operation(summary = "Buscar recetas por tiempo máximo de preparación")
+    @GetMapping("/time/{maxTime}")
+    public ResponseEntity<List<Recipe>> getRecipesByMaxTime(@PathVariable Integer maxTime) {
+        List<Recipe> recipes = recipeService.findByMaxTime(maxTime);
+        return ResponseEntity.ok(recipes);
     }
 
-    @Operation(summary = "Recomendaciones para usuario")
-    @GetMapping("/recommendations/{userId}")
-    public ResponseEntity<List<RecipeDto>> recommendations(@PathVariable Long userId, @RequestParam(defaultValue = "10") int limit) {
-        return ResponseEntity.ok(recommendationService.recommendForUser(userId, limit));
+    @Operation(summary = "Buscar recetas por título")
+    @GetMapping("/search")
+    public ResponseEntity<List<Recipe>> searchRecipes(@RequestParam String title) {
+        List<Recipe> recipes = recipeService.searchByTitle(title);
+        return ResponseEntity.ok(recipes);
+    }
+
+    @Operation(summary = "Obtener receta por ID")
+    @GetMapping("/{id}")
+    public ResponseEntity<Recipe> getRecipe(@PathVariable Long id) {
+        Recipe recipe = recipeService.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Recipe", "id", id));
+        return ResponseEntity.ok(recipe);
+    }
+
+    // Operaciones con DTO (si las necesitas para otras funcionalidades)
+    @Operation(summary = "Obtener todas las recetas como DTO")
+    @GetMapping("/dto")
+    public ResponseEntity<List<RecipeDto>> getAllRecipesAsDto() {
+        List<Recipe> recipes = recipeService.findAll();
+        List<RecipeDto> recipeDtos = recipes.stream()
+                .map(recipeMapper::toDto)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(recipeDtos);
+    }
+
+    @Operation(summary = "Obtener receta por ID como DTO")
+    @GetMapping("/dto/{id}")
+    public ResponseEntity<RecipeDto> getRecipeAsDto(@PathVariable Long id) {
+        Recipe recipe = recipeService.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Recipe", "id", id));
+        return ResponseEntity.ok(recipeMapper.toDto(recipe));
     }
 }

@@ -13,24 +13,27 @@ public class IngredientDto {
 
     private Long id;
 
-    @NotBlank(message = "El nombre del ingrediente es obligatorio.")
-    @Size(min = 2, max = 100, message = "El nombre debe tener entre 2 y 100 caracteres.")
+    @NotBlank(message = "{message.ingredient.name.required}")
+    @Size(min = 2, max = 100, message = "{message.ingredient.name.size}")
     private String name;
 
-    @NotBlank(message = "La unidad de medida es obligatoria (g, ml, unidades, etc.).")
-    @Size(max = 20, message = "La unidad no puede tener más de 20 caracteres.")
+    // NUEVO: Nombre en español
+    private String nameEs;
+
+    @NotBlank(message = "{message.ingredient.unit.required}")
+    @Size(max = 20, message = "{message.ingredient.unit.size}")
     private String unit;
 
-    @NotNull(message = "La cantidad no puede ser nula.")
-    @Positive(message = "La cantidad debe ser mayor que 0.")
+    @NotNull(message = "{message.ingredient.quantity.required}")
+    @Positive(message = "{message.ingredient.quantity.positive}")
     private Double quantity;
 
     @Pattern(
             regexp = "^(http(s?):)([/|.|\\w|\\s|-])*\\.(?:jpg|gif|png|jpeg)?$",
-            message = "La URL de la imagen debe ser válida y terminar en .jpg, .png o .gif"
+            message = "{message.ingredient.imageUrl.pattern}"
     )
     private String imageUrl;
 
-    @FutureOrPresent(message = "La fecha de caducidad no puede ser pasada.")
+    @FutureOrPresent(message = "{message.ingredient.expiryDate.future}")
     private LocalDate expiryDate;
 }

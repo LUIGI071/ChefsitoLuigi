@@ -20,12 +20,34 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(AbstractHttpConfigurer::disable) // ✅ nueva forma
+                .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**", "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
-                        .anyRequest().permitAll()
+                        // Rutas públicas
+                        .requestMatchers(
+                                "/api/auth/**",
+                                "/v3/api-docs/**",
+                                "/swagger-ui/**",
+                                "/swagger-ui.html",
+                                "/webjars/**",
+                                "/swagger-resources/**",
+                                "/uploads/**",
+                                "/api/ingredients/**"  // ✅ Unificado
+                        ).permitAll()
+
+                        // Rutas de administrador
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
+
+                        // Rutas de usuario autenticado
+                        .requestMatchers(
+                                "/api/pantry/**",
+                                "/api/recommendations/**",
+                                "/api/recipes/history/**",
+                                "/api/user-profile/**"
+                        ).authenticated()
+
+                        .anyRequest().authenticated()
                 )
-                //.sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
@@ -34,5 +56,4 @@ public class SecurityConfig {
     public org.springframework.security.crypto.password.PasswordEncoder passwordEncoder() {
         return new org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder();
     }
-
 }

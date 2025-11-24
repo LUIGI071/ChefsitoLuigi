@@ -1,0 +1,192 @@
+<!-- src/app/features/despensa/despensa.html -->
+
+<section class="pantry-page">
+  <header class="pantry-header">
+    <div>
+      <h1>Tu despensa</h1>
+      <p>
+        Controla tus ingredientes para que Chefsito te sugiera las mejores recetas 👨‍🍳
+      </p>
+    </div>
+  </header>
+
+  <!-- Estados globales -->
+  <div *ngIf="loading" class="status info">
+    Cargando tu despensa...
+  </div>
+
+  <div *ngIf="error" class="status error">
+    {{ error }}
+  </div>
+
+  <!-- Layout principal: izquierda (buscar) / derecha (lista) -->
+  <section class="pantry-layout">
+    <!-- IZQUIERDA: añadir ingredientes -->
+    <section class="panel add-panel">
+      <h2>Añadir ingredientes</h2>
+
+      <label class="field-label">Buscar ingrediente</label>
+      <div class="search-row">
+        <input
+          type="text"
+          [(ngModel)]="searchText"
+          (keyup.enter)="onSearch()"
+          placeholder="Tomate, arroz, pollo..."
+        />
+        <button class="btn primary" type="button" (click)="onSearch()">
+          Buscar
+        </button>
+        <button class="btn ghost" type="button" (click)="onVoiceSearch()">
+          <span *ngIf="!listening">Hablar 🎙️</span>
+          <span *ngIf="listening">Escuchando...</span>
+        </button>
+      </div>
+
+      <div class="search-results">
+        <p class="field-label">Resultados</p>
+
+        <div *ngIf="searching">Buscando ingredientes...</div>
+
+        <div *ngIf="!searching && searchResults.length === 0 && searchText">
+          No se encontraron ingredientes para "{{ searchText }}".
+        </div>
+
+        <div
+          *ngFor="let ing of searchResults"
+          class="search-result-item"
+        >
+          <span>{{ ing.nameEs || ing.name }}</span>
+          <button class="btn ghost" (click)="addIngredientToPantry(ing)">
+            Añadir a despensa
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- DERECHA: items en despensa -->
+    <section class="panel list-panel">
+      <h2>En tu despensa</h2>
+
+      <div *ngIf="!loading && alimentos.length === 0">
+        Todavía no has añadido ningún ingrediente.
+      </div>
+
+      <div class="pantry-grid">
+        <article
+          *ngFor="let item of alimentos"
+          class="pantry-card"
+        >
+          <header class="pantry-card-header">
+            <h3>
+              {{
+                item.ingredientNameEs ||
+                item.ingredientName ||
+                ('Ingrediente #' + item.ingredientId)
+              }}
+            </h3>
+
+            <div
+              class="allergy-badge"
+              *ngIf="hasAllergyForItem(item).length > 0"
+            >
+              ⚠ Alergia:
+              <span
+                class="badge"
+                *ngFor="let a of hasAllergyForItem(item)"
+              >
+                {{ a }}
+              </span>
+            </div>
+          </header>
+
+          <div class="pantry-card-body">
+            <div class="quantity-row">
+              <span>Cantidad</span>
+              <div class="quantity-controls">
+                <button
+                  type="button"
+                  (click)="changeQuantity(item, -1)"
+                >
+                  −
+                </button>
+                <span class="quantity-value">
+                  {{ item.quantity || 1 }}
+                </span>
+                <button
+                  type="button"
+                  (click)="changeQuantity(item, +1)"
+                >
+                  +
+                </button>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              class="btn danger full"
+              (click)="onDelete(item)"
+            >
+              Eliminar
+            </button>
+          </div>
+        </article>
+      </div>
+    </section>
+  </section>
+
+  <!-- PANEL DE ALERGIAS -->
+  <section class="allergy-card">
+    <h2>Mis alergias</h2>
+    <p class="subtitle">
+      Selecciona ingredientes a los que seas alérgico. Chefsito te avisará en las recetas.
+    </p>
+
+    <!-- Buscador de alérgenos -->
+    <div class="allergy-search">
+      <input
+        type="text"
+        [(ngModel)]="allergySearchText"
+        (keyup.enter)="buscarAlergia()"
+        placeholder="Buscar ingrediente (huevo, leche, frutos secos...)"
+      />
+      <button class="btn primary" type="button" (click)="buscarAlergia()">
+        Buscar
+      </button>
+    </div>
+
+    <!-- Resultados de búsqueda -->
+    <div
+      *ngIf="allergySearchResults.length > 0"
+      class="allergy-results"
+    >
+      <div
+        *ngFor="let ing of allergySearchResults"
+        class="allergy-result-item"
+      >
+        <span>{{ ing.nameEs || ing.name }}</span>
+        <button class="btn ghost" (click)="agregarAlergia(ing)">
+          Añadir
+        </button>
+      </div>
+    </div>
+
+    <!-- Lista de alergias actuales -->
+    <div class="allergy-list">
+      <h3>Tus alérgenos</h3>
+
+      <div *ngIf="!userProfile || userProfile.allergies?.length === 0">
+        No has añadido ninguna alergia todavía.
+      </div>
+
+      <div
+        *ngFor="let a of userProfile?.allergies"
+        class="allergy-item"
+      >
+        <span>{{ a }}</span>
+        <button class="btn danger" (click)="eliminarAlergia(a)">
+          Quitar
+        </button>
+      </div>
+    </div>
+  </section>
+</section>

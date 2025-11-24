@@ -1,0 +1,18 @@
+<!-- src/app/layout/main-layout.html -->
+
+<nav class="navbar">
+  <div class="nav-left">
+    <span class="brand">Chefsito 🍳</span>
+
+    <a routerLink="/despensa" routerLinkActive="active">Despensa</a>
+    <a routerLink="/recetas" routerLinkActive="active">Recetas</a>
+  </div>
+
+  <div class="nav-right">
+    <a routerLink="/login" class="logout">Cerrar sesión</a>
+  </div>
+</nav>
+
+<main class="content">
+  <router-outlet></router-outlet>
+</main>

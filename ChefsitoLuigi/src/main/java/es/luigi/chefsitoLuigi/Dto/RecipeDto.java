@@ -14,21 +14,21 @@ public class RecipeDto {
 
     private Long id;
 
-    @NotBlank(message = "El título de la receta es obligatorio.")
-    @Size(min = 3, max = 100, message = "El título debe tener entre 3 y 100 caracteres.")
+    @NotBlank(message = "{recipe.title.notblank}")
+    @Size(min = 3, max = 100, message = "{recipe.title.size}")
     private String title;
 
-    @NotBlank(message = "Las instrucciones son obligatorias.")
-    @Size(min = 10, max = 4000, message = "Las instrucciones deben tener al menos 10 caracteres.")
+    @NotBlank(message = "{recipe.instructions.notblank}")
+    @Size(min = 10, max = 4000, message = "{recipe.instructions.size}")
     private String instructions;
 
-    @NotNull(message = "El tiempo de preparación es obligatorio.")
-    @Min(value = 1, message = "El tiempo de preparación debe ser al menos 1 minuto.")
+    @NotNull(message = "{recipe.preparationminutes.notnull}")
+    @Min(value = 1, message = "{recipe.preparationminutes.min}")
     private Integer preparationMinutes;
 
-    @NotBlank(message = "La categoría es obligatoria (ej. desayuno, vegano, sin gluten).")
+    @NotBlank(message = "{recipe.category.notblank}")
     private String category;
 
-    @NotEmpty(message = "Debe incluir al menos un ingrediente.")
+    @NotEmpty(message = "{recipe.ingredientids.notempty}")
     private List<Long> ingredientIds;
 }

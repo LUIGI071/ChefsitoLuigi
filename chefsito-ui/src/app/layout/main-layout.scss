@@ -1,0 +1,57 @@
+/* src/app/layout/main-layout.scss */
+
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.9rem 1.5rem;
+  background: #0f172a;
+  border-bottom: 1px solid #1e293b;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.nav-left {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+}
+
+.nav-left a {
+  text-decoration: none;
+  color: #cbd5e1;
+  font-size: 0.95rem;
+  transition: 0.2s;
+}
+
+.nav-left a.active {
+  color: #38bdf8;
+  font-weight: 600;
+}
+
+.nav-left a:hover {
+  color: white;
+}
+
+.brand {
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: #f8fafc;
+  margin-right: 1rem;
+}
+
+.nav-right a.logout {
+  text-decoration: none;
+  color: #fca5a5;
+  font-size: 0.9rem;
+  transition: 0.2s;
+}
+
+.nav-right a.logout:hover {
+  color: #f87171;
+}
+
+.content {
+  padding: 1.5rem;
+}

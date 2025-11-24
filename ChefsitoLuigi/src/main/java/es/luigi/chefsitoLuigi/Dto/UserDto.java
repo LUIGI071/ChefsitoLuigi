@@ -15,16 +15,16 @@ public class UserDto {
 
     private Long id;
 
-    @Email(message = "Debe ser un correo electrónico válido.")
-    @NotBlank(message = "El correo electrónico es obligatorio.")
+    @Email(message = "{message.user.email.valid}")
+    @NotBlank(message = "{message.user.email.required}")
     private String email;
 
-    @NotBlank(message = "La contraseña es obligatoria.")
-    @Size(min = 8, message = "La contraseña debe tener al menos 8 caracteres.")
+    @NotBlank(message = "{message.user.password.required}")
+    @Size(min = 8, message = "{message.user.password.size}")
     private String password;
 
-    @NotBlank(message = "El nombre completo es obligatorio.")
+    @NotBlank(message = "{message.user.fullName.required}")
     private String fullName;
 
-    private Set<@NotBlank(message = "El rol no puede estar vacío.") String> roles;
+    private Set<@NotBlank(message = "{message.user.roles.notblank}") String> roles;
 }

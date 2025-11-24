@@ -10,11 +10,11 @@ import lombok.*;
 @AllArgsConstructor
 public class PantryItemDto {
     private Long id;
-    @NotNull(message = "El ID del usuario es obligatorio.")
+    @NotNull(message = "{pantryitem.userid.notnull}")
     private Long userId;
-    @NotNull(message = "El ID del ingrediente es obligatorio.")
+    @NotNull(message = "{pantryitem.ingredientid.notnull}")
     private Long ingredientId;
-    @NotNull(message = "La cantidad no puede ser nula.")
-    @Positive(message = "La cantidad debe ser mayor que 0.")
+    @NotNull(message = "{pantryitem.quantity.notnull}")
+    @Positive(message = "{pantryitem.quantity.positive}")
     private Double quantity;
 }
