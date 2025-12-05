@@ -1,11 +1,14 @@
+// src/app/features/despensa/despensa.ts
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+
 import {
   DespensaService,
   PantryItem,
   PantryItemCreateRequest,
 } from './despensa.service';
+
 import {
   IngredientService,
   Ingredient,
@@ -15,6 +18,7 @@ import {
   UserProfile,
   UserProfileService,
 } from './user-profile.service';
+
 import { AuthService } from '../../core/auth/auth.service';
 
 @Component({
@@ -217,7 +221,7 @@ export class DespensaComponent implements OnInit {
       this.listening = false;
 
       this.ingredientService.voiceSearch(text, 'es').subscribe({
-        next: (res) => {
+        next: (res: any) => {
           this.searchResults = res.ingredients;
         },
         error: (err: unknown) => {
@@ -249,11 +253,12 @@ export class DespensaComponent implements OnInit {
     }
 
     this.userProfileService.getByUserId(userId).subscribe({
-      next: (profile) => {
+      next: (profile: UserProfile) => {
         this.userProfile = {
           ...profile,
           allergies: profile.allergies || [],
           intolerances: profile.intolerances || [],
+          dislikedIngredients: profile.dislikedIngredients || [],
         };
       },
       error: (err: any) => {
@@ -263,6 +268,8 @@ export class DespensaComponent implements OnInit {
             userId,
             allergies: [],
             intolerances: [],
+            dislikedIngredients: [],
+            dietType: null,
           };
           return;
         }
@@ -299,6 +306,8 @@ export class DespensaComponent implements OnInit {
         userId,
         allergies: [],
         intolerances: [],
+        dislikedIngredients: [],
+        dietType: null,
       };
     }
 
@@ -313,6 +322,7 @@ export class DespensaComponent implements OnInit {
           ...updated,
           allergies: updated.allergies || [],
           intolerances: updated.intolerances || [],
+          dislikedIngredients: updated.dislikedIngredients || [],
         };
       },
       error: (err: unknown) => {
@@ -335,6 +345,7 @@ export class DespensaComponent implements OnInit {
           ...updated,
           allergies: updated.allergies || [],
           intolerances: updated.intolerances || [],
+          dislikedIngredients: updated.dislikedIngredients || [],
         };
       },
       error: (err: unknown) => {

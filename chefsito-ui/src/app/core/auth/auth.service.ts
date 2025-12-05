@@ -51,6 +51,33 @@ export class AuthService {
     );
   }
 
+  /**
+   * Registro de nuevo usuario.
+   * Coincide con lo que espera tu test (email, password, fullName)
+   * y guarda la sesión igual que login.
+   */
+  register(
+    email: string,
+    password: string,
+    fullName: string
+  ): Observable<LoginResponse> {
+    const body = {
+      email: email.trim(),
+      password: password,
+      fullName: fullName.trim(),
+    };
+
+    return this.http.post<LoginResponse>(`${this.API_URL}/register`, body).pipe(
+      tap((res) => {
+        localStorage.setItem('token', res.token);
+        localStorage.setItem('email', res.email);
+        localStorage.setItem('userId', String(res.id));
+        localStorage.setItem('fullName', res.fullName ?? '');
+        localStorage.setItem('roles', JSON.stringify(res.roles ?? []));
+      })
+    );
+  }
+
   logout(): void {
     localStorage.removeItem('token');
     localStorage.removeItem('email');

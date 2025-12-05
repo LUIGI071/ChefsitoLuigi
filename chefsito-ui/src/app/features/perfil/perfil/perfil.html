@@ -1,0 +1,201 @@
+<section class="profile-page">
+  <header class="profile-header">
+    <h1>Perfil de usuario</h1>
+    <p>
+      Configura tus preferencias de cocina, alérgenos globales e idioma para que Chefsito
+      te recomiende mejor 🍽️
+    </p>
+  </header>
+
+  <div *ngIf="loading" class="status info">
+    Cargando tu perfil...
+  </div>
+
+  <div *ngIf="error" class="status error">
+    {{ error }}
+  </div>
+
+  <section *ngIf="!loading" class="profile-grid">
+    <!-- DATOS DE CUENTA -->
+    <article class="profile-card profile-account" *ngIf="currentUser as user">
+      <h2>Datos de tu cuenta</h2>
+      <p class="subtitle">
+        Estos son los datos con los que te registraste en Chefsito.
+      </p>
+
+      <div class="field-block">
+        <label>Nombre completo</label>
+        <div class="field-readonly">
+          {{ user.fullName || 'Sin nombre' }}
+        </div>
+      </div>
+
+      <div class="field-block">
+        <label>Email</label>
+        <div class="field-readonly">
+          {{ user.email }}
+        </div>
+      </div>
+
+      <div class="field-block">
+        <label>Roles</label>
+        <div>
+          <span
+            class="role-badge"
+            *ngFor="let role of user.roles"
+            [class.admin]="role === 'ROLE_ADMIN'"
+          >
+            {{ role.replace('ROLE_', '') }}
+          </span>
+        </div>
+      </div>
+    </article>
+
+    <!-- ALÉRGENOS -->
+    <article class="profile-card">
+      <h2>Alérgenos</h2>
+      <p class="subtitle">
+        Ingredientes a los que eres alérgico. Los usaremos para avisarte en las recetas y en tu despensa.
+      </p>
+
+      <div class="tag-input-row">
+        <input
+          type="text"
+          [(ngModel)]="newAllergy"
+          placeholder="Ej: cacahuete, marisco..."
+          (keyup.enter)="addAllergy()"
+        />
+        <button type="button" class="btn small" (click)="addAllergy()">
+          Añadir
+        </button>
+      </div>
+
+      <div class="tag-list" *ngIf="profile.allergies?.length">
+        <span
+          class="tag"
+          *ngFor="let a of profile.allergies"
+          (click)="removeAllergy(a)"
+          title="Quitar"
+        >
+          {{ a }} ✕
+        </span>
+      </div>
+      <p *ngIf="!profile.allergies?.length" class="empty">
+        No has añadido alérgenos todavía.
+      </p>
+    </article>
+
+    <!-- INTOLERANCIAS -->
+    <article class="profile-card">
+      <h2>Intolerancias</h2>
+      <p class="subtitle">
+        Intolerancias o sensibilidades (por ejemplo: lactosa, gluten).
+      </p>
+
+      <div class="tag-input-row">
+        <input
+          type="text"
+          [(ngModel)]="newIntolerance"
+          placeholder="Ej: lactosa, gluten..."
+          (keyup.enter)="addIntolerance()"
+        />
+        <button type="button" class="btn small" (click)="addIntolerance()">
+          Añadir
+        </button>
+      </div>
+
+      <div class="tag-list" *ngIf="profile.intolerances?.length">
+        <span
+          class="tag"
+          *ngFor="let i of profile.intolerances"
+          (click)="removeIntolerance(i)"
+          title="Quitar"
+        >
+          {{ i }} ✕
+        </span>
+      </div>
+      <p *ngIf="!profile.intolerances?.length" class="empty">
+        No has añadido intolerancias todavía.
+      </p>
+    </article>
+
+    <!-- INGREDIENTES QUE NO TE GUSTAN -->
+    <article class="profile-card">
+      <h2>Ingredientes que no me gustan</h2>
+      <p class="subtitle">
+        Lista de ingredientes que prefieres evitar en las recetas.
+      </p>
+
+      <div class="tag-input-row">
+        <input
+          type="text"
+          [(ngModel)]="newDisliked"
+          placeholder="Ej: cilantro, aceitunas..."
+          (keyup.enter)="addDisliked()"
+        />
+        <button type="button" class="btn small" (click)="addDisliked()">
+          Añadir
+        </button>
+      </div>
+
+      <div class="tag-list" *ngIf="profile.dislikedIngredients?.length">
+        <span
+          class="tag"
+          *ngFor="let d of profile.dislikedIngredients"
+          (click)="removeDisliked(d)"
+          title="Quitar"
+        >
+          {{ d }} ✕
+        </span>
+      </div>
+      <p *ngIf="!profile.dislikedIngredients?.length" class="empty">
+        No has añadido ningún ingrediente que no te guste.
+      </p>
+    </article>
+
+    <!-- PREFERENCIAS DE COCINA + IDIOMA -->
+    <article class="profile-card">
+      <h2>Preferencias de cocina</h2>
+
+      <div class="field-block">
+        <label>Tipo de dieta</label>
+        <select [(ngModel)]="profile.dietType">
+          <option *ngFor="let d of dietOptions" [ngValue]="d.value">
+            {{ d.label }}
+          </option>
+        </select>
+      </div>
+
+      <div class="field-block">
+        <label>Nivel de cocina</label>
+        <select [(ngModel)]="profile.cookingSkillLevel">
+          <option *ngFor="let s of skillOptions" [ngValue]="s.value">
+            {{ s.label }}
+          </option>
+        </select>
+      </div>
+
+      <div class="field-block">
+        <label>Idioma de la aplicación</label>
+        <select
+          [(ngModel)]="preferredLanguage"
+          (ngModelChange)="onLanguageChange()"
+        >
+          <option *ngFor="let lang of languages" [ngValue]="lang.code">
+            {{ lang.label }}
+          </option>
+        </select>
+      </div>
+
+      <button
+        type="button"
+        class="btn primary"
+        (click)="save()"
+        [disabled]="saving"
+      >
+        <span *ngIf="!saving">Guardar cambios</span>
+        <span *ngIf="saving">Guardando...</span>
+      </button>
+    </article>
+  </section>
+</section>

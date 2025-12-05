@@ -1,0 +1,58 @@
+<!-- src/app/features/admin.html -->
+
+<div class="admin-container">
+  <h1>Panel de administración</h1>
+
+  <div class="stats" *ngIf="totalUsers !== null">
+    <span>Usuarios totales: {{ totalUsers }}</span>
+  </div>
+
+  <div *ngIf="loading" class="msg">Cargando usuarios...</div>
+  <div *ngIf="error" class="msg error">{{ error }}</div>
+
+  <table *ngIf="!loading && users.length" class="users-table">
+    <thead>
+    <tr>
+      <th>ID</th>
+      <th>Nombre completo</th>
+      <th>Email</th>
+      <th>Roles</th>
+      <th>Acciones</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let u of users">
+      <td>{{ u.id }}</td>
+      <td>{{ u.fullName || '-' }}</td>
+      <td>{{ u.email }}</td>
+      <td>
+          <span
+            class="role-badge"
+            *ngFor="let r of u.roles"
+            [class.admin]="r === 'ROLE_ADMIN'"
+          >
+            {{ r.replace('ROLE_', '') }}
+          </span>
+      </td>
+      <td class="actions">
+        <button type="button" (click)="toggleAdmin(u)">
+          {{ isAdminRole(u) ? 'Quitar ADMIN' : 'Hacer ADMIN' }}
+        </button>
+
+        <button
+          type="button"
+          (click)="deleteUser(u)"
+          [disabled]="isSelf(u)"
+          title="No puedes borrarte a ti mismo"
+        >
+          Eliminar
+        </button>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+
+  <p *ngIf="!loading && !users.length">
+    No hay usuarios registrados por ahora.
+  </p>
+</div>

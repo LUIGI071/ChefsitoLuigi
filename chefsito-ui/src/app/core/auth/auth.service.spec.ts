@@ -75,9 +75,10 @@ describe('AuthService', () => {
     };
 
     service.register('new@example.com', '123456', 'Nuevo Usuario')
-      .subscribe((res) => {
+      .subscribe((res: LoginResponse) => {
         expect(res).toEqual(mockRes);
       });
+
 
     const req = httpMock.expectOne(`${API_URL}/register`);
     expect(req.request.method).toBe('POST');

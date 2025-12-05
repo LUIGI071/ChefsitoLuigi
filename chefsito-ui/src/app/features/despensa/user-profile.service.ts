@@ -1,31 +1,42 @@
 // src/app/features/despensa/user-profile.service.ts
-import { Injectable } from '@angular/core';
+
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
+import { environment } from '../../../environments/environment';
+
 export interface UserProfile {
-  id?: number;             // opcional
+  id?: number;
   userId: number;
   allergies: string[];
   intolerances: string[];
+  dislikedIngredients: string[];
+  dietType: string | null;
+  // En la entidad del backend existe este campo, lo dejamos opcional:
+  cookingSkillLevel?: string | null;
 }
 
 @Injectable({
   providedIn: 'root',
 })
 export class UserProfileService {
-  private baseUrl = '/api/user-profile';
+  private http = inject(HttpClient);
+  private readonly API_URL = `${environment.apiBaseUrl}/user-profile`;
 
-  constructor(private http: HttpClient) {}
-
+  /**
+   * GET /api/user-profile/user/{userId}
+   * Obtiene el perfil culinario por id de usuario.
+   */
   getByUserId(userId: number): Observable<UserProfile> {
-    return this.http.get<UserProfile>(`${this.baseUrl}/user/${userId}`);
+    return this.http.get<UserProfile>(`${this.API_URL}/user/${userId}`);
   }
 
   /**
-   * El backend tiene un POST que sirve tanto para crear como para actualizar.
+   * POST /api/user-profile
+   * Crea o actualiza el perfil culinario.
    */
   createOrUpdate(profile: UserProfile): Observable<UserProfile> {
-    return this.http.post<UserProfile>(this.baseUrl, profile);
+    return this.http.post<UserProfile>(this.API_URL, profile);
   }
 }

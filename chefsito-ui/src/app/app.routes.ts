@@ -3,13 +3,17 @@ import { Routes } from '@angular/router';
 import { LoginComponent } from './features/auth/login/login';
 
 export const routes: Routes = [
-  // Login sin layout
+  // ============================
+  // LOGIN (sin layout)
+  // ============================
   {
     path: 'login',
     component: LoginComponent,
   },
 
-  // Rutas con layout principal
+  // ============================
+  // LAYOUT PRINCIPAL
+  // ============================
   {
     path: '',
     loadComponent: () =>
@@ -17,6 +21,7 @@ export const routes: Routes = [
         (m) => m.MainLayoutComponent
       ),
     children: [
+      // DESPENSA
       {
         path: 'despensa',
         loadComponent: () =>
@@ -24,6 +29,8 @@ export const routes: Routes = [
             (m) => m.DespensaComponent
           ),
       },
+
+      // RECETAS
       {
         path: 'recetas',
         loadComponent: () =>
@@ -31,6 +38,26 @@ export const routes: Routes = [
             (m) => m.RecetasComponent
           ),
       },
+
+      // PERFIL CULINARIO
+      {
+        path: 'perfil',
+        loadComponent: () =>
+          import('./features/perfil/perfil/perfil').then(
+            (m) => m.PerfilComponent
+          ),
+      },
+
+      // PANEL ADMIN
+      {
+        path: 'admin',
+        loadComponent: () =>
+          import('./features/admin').then(
+            (m) => m.Admin          // nombre de la clase en admin.ts
+          ),
+      },
+
+      // Redirección por defecto
       {
         path: '',
         pathMatch: 'full',
@@ -39,9 +66,12 @@ export const routes: Routes = [
     ],
   },
 
-  // Wildcard route
+  // ============================
+  // WILDCARD
+  // ============================
   {
     path: '**',
     redirectTo: 'despensa',
   },
 ];
+

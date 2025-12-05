@@ -1,0 +1,225 @@
+<section class="auth-page">
+  <div class="auth-shell">
+
+    <!-- Hero -->
+    <div class="auth-hero">
+      <div class="logo-circle">🥕</div>
+      <h1>Crear cuenta</h1>
+
+      <p>
+        Cuéntale a Chefsito cómo comes y te sugerirá recetas que
+        respeten tus alergias, intolerancias y estilo de vida.
+      </p>
+
+      <ul class="hero-list">
+        <li>Evita recetas con tus alérgenos</li>
+        <li>Marca ingredientes que no te gustan</li>
+        <li>Filtra por dieta: vegana, keto, sin gluten…</li>
+      </ul>
+    </div>
+
+    <!-- Tarjeta -->
+    <div class="auth-card">
+      <h2 class="card-title">Regístrate</h2>
+      <p class="card-subtitle">
+        Solo necesitas unos datos básicos y tu perfil culinario.
+      </p>
+
+      <!-- Error general -->
+      <div *ngIf="errorMessage" class="alert error">
+        {{ errorMessage }}
+      </div>
+
+      <form class="auth-form" [formGroup]="form" (ngSubmit)="submit()">
+
+        <!-- Nombre completo -->
+        <div class="field">
+          <label for="fullName">Nombre completo</label>
+          <input
+            id="fullName"
+            type="text"
+            formControlName="fullName"
+            placeholder="Ej. Diego Alexis Villafuerte"
+          />
+          <div
+            class="field-error"
+            *ngIf="
+              form.get('fullName')?.invalid &&
+              (form.get('fullName')?.touched || form.get('fullName')?.dirty)
+            "
+          >
+            <span *ngIf="form.get('fullName')?.errors?.['required']">
+              El nombre es obligatorio.
+            </span>
+            <span *ngIf="form.get('fullName')?.errors?.['minlength']">
+              Escribe al menos 3 caracteres.
+            </span>
+          </div>
+        </div>
+
+        <!-- Email -->
+        <div class="field">
+          <label for="email">Correo electrónico</label>
+          <input
+            id="email"
+            type="email"
+            formControlName="email"
+            placeholder="tu@email.com"
+            autocomplete="email"
+          />
+          <div
+            class="field-error"
+            *ngIf="
+              form.get('email')?.invalid &&
+              (form.get('email')?.touched || form.get('email')?.dirty)
+            "
+          >
+            <span *ngIf="form.get('email')?.errors?.['required']">
+              El correo es obligatorio.
+            </span>
+            <span *ngIf="form.get('email')?.errors?.['email']">
+              Introduce un correo válido.
+            </span>
+          </div>
+        </div>
+
+        <!-- Password + Confirm -->
+        <div class="field field-inline">
+
+          <!-- Password -->
+          <div>
+            <label for="password">Contraseña</label>
+            <input
+              id="password"
+              type="password"
+              formControlName="password"
+              placeholder="Mínimo 8 caracteres"
+              autocomplete="new-password"
+            />
+
+            <div
+              class="field-error"
+              *ngIf="
+                form.get('password')?.invalid &&
+                (form.get('password')?.touched || form.get('password')?.dirty)
+              "
+            >
+              <span *ngIf="form.get('password')?.errors?.['required']">
+                La contraseña es obligatoria.
+              </span>
+              <span *ngIf="form.get('password')?.errors?.['minlength']">
+                Debe tener al menos 8 caracteres.
+              </span>
+            </div>
+          </div>
+
+          <!-- Confirm Password -->
+          <div>
+            <label for="confirmPassword">Repetir contraseña</label>
+            <input
+              id="confirmPassword"
+              type="password"
+              formControlName="confirmPassword"
+              placeholder="Repite la contraseña"
+            />
+
+            <div
+              class="field-error"
+              *ngIf="
+                form.get('confirmPassword')?.invalid ||
+                form.get('password')?.value !==
+                  form.get('confirmPassword')?.value
+              "
+            >
+              <span
+                *ngIf="
+                  form.get('confirmPassword')?.errors?.['required'] ||
+                  form.get('password')?.value !==
+                    form.get('confirmPassword')?.value
+                "
+              >
+                Las contraseñas deben coincidir.
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dieta -->
+        <div class="field">
+          <label for="dietType">Tipo de dieta (opcional)</label>
+          <select id="dietType" formControlName="dietType">
+            <option *ngFor="let d of dietOptions" [value]="d.value">
+              {{ d.label }}
+            </option>
+          </select>
+        </div>
+
+        <!-- Alergias -->
+        <div class="field">
+          <label for="allergiesText">
+            Alergias alimentarias
+            <span class="hint">(separadas por coma o salto de línea)</span>
+          </label>
+
+          <textarea
+            id="allergiesText"
+            formControlName="allergiesText"
+            rows="2"
+            placeholder="Ej: gluten, cacahuetes, marisco"
+          ></textarea>
+        </div>
+
+        <!-- Intolerancias -->
+        <div class="field">
+          <label for="intolerancesText">
+            Intolerancias
+            <span class="hint">(opcional)</span>
+          </label>
+
+          <textarea
+            id="intolerancesText"
+            formControlName="intolerancesText"
+            rows="2"
+            placeholder="Ej: lactosa, fructosa"
+          ></textarea>
+        </div>
+
+        <!-- Ingredientes que no gustan -->
+        <div class="field">
+          <label for="dislikedText">
+            Ingredientes que no te gustan
+            <span class="hint">(para no sugerir recetas con ellos)</span>
+          </label>
+
+          <textarea
+            id="dislikedText"
+            formControlName="dislikedText"
+            rows="2"
+            placeholder="Ej: cilantro, aceitunas, repollo"
+          ></textarea>
+        </div>
+
+        <!-- Submit -->
+        <button
+          class="btn primary"
+          type="submit"
+          [disabled]="loading || form.invalid"
+        >
+          <span *ngIf="!loading">Crear cuenta</span>
+
+          <span *ngIf="loading" class="btn-loading">
+            <span class="spinner"></span>
+            Creando cuenta...
+          </span>
+        </button>
+
+      </form>
+
+      <div class="auth-footer">
+        <p>¿Ya tienes cuenta?</p>
+        <a routerLink="/login">Iniciar sesión</a>
+      </div>
+
+    </div>
+  </div>
+</section>
