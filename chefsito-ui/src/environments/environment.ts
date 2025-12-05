@@ -1,4 +1,4 @@
-// chefsito-ui/src/environments/environment.ts
+// src/environments/environment.ts  (para producción en Render)
 export const environment = {
   production: true,
   apiBaseUrl: 'https://chefsito-backend.onrender.com/api',

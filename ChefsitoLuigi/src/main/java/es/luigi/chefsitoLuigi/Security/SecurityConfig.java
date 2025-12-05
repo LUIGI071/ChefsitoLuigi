@@ -10,6 +10,13 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 
+// 👇 IMPORTS PARA CORS
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.List;
+
 @Configuration
 @RequiredArgsConstructor
 @EnableMethodSecurity
@@ -20,6 +27,8 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
+                // ✅ Habilitamos CORS usando la configuración de abajo
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         // Rutas públicas
@@ -31,7 +40,7 @@ public class SecurityConfig {
                                 "/webjars/**",
                                 "/swagger-resources/**",
                                 "/uploads/**",
-                                "/api/ingredients/**"  // ✅ Unificado
+                                "/api/ingredients/**"
                         ).permitAll()
 
                         // Rutas de administrador
@@ -52,6 +61,25 @@ public class SecurityConfig {
 
         return http.build();
     }
+
+    // ✅ Configuración global de CORS
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+
+        configuration.setAllowedOrigins(List.of(
+                "http://localhost:4200",              // para desarrollo
+                "https://chefsito-ui.onrender.com"    // tu frontend en Render
+        ));
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedHeaders(List.of("*"));
+        configuration.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
+    }
+
     @Bean
     public org.springframework.security.crypto.password.PasswordEncoder passwordEncoder() {
         return new org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder();
