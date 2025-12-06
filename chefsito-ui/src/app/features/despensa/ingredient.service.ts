@@ -1,7 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { environment } from '../../../environments/environment';  // 👈 AQUÍ EL CAMBIO
 
 export interface Ingredient {
   id: number;
@@ -9,8 +8,15 @@ export interface Ingredient {
   nameEs?: string;
   category?: string;
   unit?: string;
-  imageUrl?: string;
+
+  // URL principal que devuelve tu backend en smart-search
+  imageUrl?: string | null;
+
+  // Campos extra por si el backend usa otros nombres
+  ingredientImageUrl?: string | null;
+  image?: string | null;
 }
+
 
 export interface VoiceSearchResponse {
   searchText: string;
@@ -23,9 +29,7 @@ export interface VoiceSearchResponse {
 })
 export class IngredientService {
   private http = inject(HttpClient);
-
-  // OJO: en tu environment se llama apiBaseUrl, no apiUrl
-  private readonly API_URL = `${environment.apiBaseUrl}/ingredients`;
+  private readonly API_URL = '/api/ingredients';
 
   /**
    * BÚSQUEDA INTELIGENTE REAL

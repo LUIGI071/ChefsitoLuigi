@@ -1,43 +1,128 @@
 <!-- src/app/features/auth/login/login.html -->
-<section class="login-wrapper">
-  <article class="login-card">
-    <header class="login-header">
-      <h1>Chefsito</h1>
-      <p class="subtitle">Inicia sesión para ver tu despensa 🧑‍🍳</p>
-    </header>
 
-    <form #loginForm="ngForm" (ngSubmit)="onSubmit(loginForm)" novalidate>
-      <label class="field">
-        <span>Usuario o email</span>
-        <input
-          type="text"
-          name="usernameOrEmail"
-          [(ngModel)]="usernameOrEmail"
-          required
-        />
-      </label>
+<section class="auth-page">
+  <div class="auth-shell">
+    <!-- Columna izquierda: branding / texto -->
+    <div class="auth-hero">
+      <div class="logo-circle">🍳</div>
+      <h1>Chefsito Luigi</h1>
+      <p>
+        Organiza tu despensa, evita desperdicios y descubre
+        recetas que respetan tus alergias y tu estilo de vida.
+      </p>
+      <ul class="hero-list">
+        <li>Recomendaciones según lo que tienes en casa</li>
+        <li>Filtros por alergias, intolerancias y dieta</li>
+        <li>Panel para ver tus recetas y tu perfil culinario</li>
+      </ul>
+    </div>
 
-      <label class="field">
-        <span>Contraseña</span>
-        <input
-          type="password"
-          name="password"
-          [(ngModel)]="password"
-          required
-          minlength="4"
-        />
-      </label>
+    <!-- Columna derecha: tarjeta de login -->
+    <div class="auth-card">
+      <h2 class="card-title">Inicia sesión</h2>
+      <p class="card-subtitle">
+        Entra con tu cuenta para que Chefsito cocine contigo 😋
+      </p>
 
-      <button
-        type="submit"
-        class="btn-primary"
-        [disabled]="loginForm.invalid || loading"
+      <!-- Mensaje de error -->
+      <div *ngIf="errorMessage" class="alert error">
+        {{ errorMessage }}
+      </div>
+
+      <!-- Formulario -->
+      <form
+        class="auth-form"
+        [formGroup]="form"
+        (ngSubmit)="submit()"
       >
-        <span *ngIf="!loading">Entrar</span>
-        <span *ngIf="loading">Entrando...</span>
-      </button>
+        <!-- Email -->
+        <div class="field">
+          <label for="email">Correo electrónico</label>
+          <input
+            id="email"
+            type="email"
+            formControlName="email"
+            placeholder="tu@email.com"
+            autocomplete="email"
+          />
 
-      <p class="error" *ngIf="error">{{ error }}</p>
-    </form>
-  </article>
+          <div
+            class="field-error"
+            *ngIf="email?.invalid"
+          >
+            <span *ngIf="email?.errors?.['required']">
+              El correo es obligatorio.
+            </span>
+            <span *ngIf="email?.errors?.['email']">
+              Introduce un correo válido.
+            </span>
+          </div>
+        </div>
+
+        <!-- Password -->
+        <div class="field">
+          <label for="password">Contraseña</label>
+
+          <div class="password-wrapper">
+            <input
+              id="password"
+              [type]="passwordVisible ? 'text' : 'password'"
+              formControlName="password"
+              placeholder="••••••••"
+              autocomplete="current-password"
+            />
+            <button
+              type="button"
+              class="toggle-password"
+              (click)="togglePasswordVisibility()"
+            >
+              {{ passwordVisible ? 'Ocultar' : 'Ver' }}
+            </button>
+          </div>
+
+          <div
+            class="field-error"
+            *ngIf="password?.invalid"
+          >
+            <span *ngIf="password?.errors?.['required']">
+              La contraseña es obligatoria.
+            </span>
+            <span *ngIf="password?.errors?.['minlength']">
+              Debe tener al menos 6 caracteres.
+            </span>
+          </div>
+        </div>
+
+        <!-- Remember me -->
+        <div class="form-row form-row--between">
+          <label class="remember">
+            <input
+              type="checkbox"
+              formControlName="rememberMe"
+            />
+            <span>Mantener la sesión iniciada</span>
+          </label>
+        </div>
+
+        <!-- Botón principal -->
+        <button
+          class="btn primary"
+          type="submit"
+          [disabled]="loading || form.invalid"
+        >
+          <span *ngIf="!loading">Entrar</span>
+          <span *ngIf="loading" class="btn-loading">
+            <span class="spinner"></span>
+            Entrando...
+          </span>
+        </button>
+      </form>
+
+      <!-- Footer -->
+      <div class="auth-footer">
+        <p>¿Todavía no tienes cuenta?</p>
+        <a routerLink="/register">Crear una cuenta nueva</a>
+      </div>
+    </div>
+  </div>
 </section>

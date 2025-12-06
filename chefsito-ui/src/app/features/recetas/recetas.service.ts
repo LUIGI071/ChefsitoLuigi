@@ -3,7 +3,7 @@ import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
-// Debe coincidir con OpenAiRecipeResponse.java
+// Debe coincidir con OpenAiRecipeResponse.java (los nuevos campos son opcionales)
 export interface RecipeRecommendation {
   openAiId: string;
   title: string;
@@ -13,6 +13,9 @@ export interface RecipeRecommendation {
   preparationTime: number | null;
   difficulty: string | null;
   category: string | null;
+
+  // Opcional: por si en el futuro el backend ya trae imagen
+  imageUrl?: string | null;
 }
 
 // Si algún día quieres llamar a /by-ingredients
@@ -52,7 +55,9 @@ export class RecetasService {
    * POST /api/recommendations/by-ingredients
    * (por si quieres usarlo más adelante)
    */
-  getByIngredients(request: RecipeRequest): Observable<RecipeRecommendation[]> {
+  getByIngredients(
+    request: RecipeRequest
+  ): Observable<RecipeRecommendation[]> {
     return this.http.post<RecipeRecommendation[]>(
       `${this.API_URL}/by-ingredients`,
       request

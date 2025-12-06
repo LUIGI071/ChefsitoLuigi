@@ -15,24 +15,38 @@ import { AuthService, CurrentUser } from '../../auth/auth.service';
   template: `
     <div class="layout-container">
       <nav class="navbar">
+        <!-- Marca / logo -->
         <div class="nav-brand">
           <span class="logo">👨‍🍳</span>
           <span class="brand-name">Chefsito</span>
         </div>
 
+        <!-- Pestañas centrales -->
         <div class="nav-links">
           <a routerLink="/despensa" routerLinkActive="active">Despensa</a>
           <a routerLink="/recetas" routerLinkActive="active">Recetas</a>
+          <a routerLink="/perfil" routerLinkActive="active">Mi perfil</a>
         </div>
 
+        <!-- Zona usuario / admin -->
         <div class="nav-profile" *ngIf="currentUser as user">
-          <span class="user-name">
-            {{ user.fullName || user.email }}
-          </span>
+          <!-- Botón panel admin SOLO si tiene ROLE_ADMIN -->
+          <button
+            *ngIf="isAdmin(user)"
+            type="button"
+            class="btn-small btn-admin"
+            routerLink="/admin"
+            routerLinkActive="active"
+          >
+            Administrador
+          </button>
+
+          <!-- Botón cerrar sesión -->
           <button type="button" class="btn-small" (click)="logout()">
             Cerrar sesión
           </button>
         </div>
+
       </nav>
 
       <main class="main-content">
@@ -133,6 +147,16 @@ import { AuthService, CurrentUser } from '../../auth/auth.service';
         background: rgba(148, 163, 184, 0.25);
       }
 
+      /* Botón admin un poco destacado */
+      .btn-admin {
+        border-color: #f97316;
+      }
+
+      .btn-admin.active {
+        background: rgba(249, 115, 22, 0.12);
+        color: #f97316;
+      }
+
       .main-content {
         flex: 1;
         overflow-y: auto;
@@ -149,6 +173,10 @@ export class MainLayoutComponent {
 
   get currentUser(): CurrentUser | null {
     return this.authService.getCurrentUser();
+  }
+
+  isAdmin(user: CurrentUser | null): boolean {
+    return !!user && Array.isArray(user.roles) && user.roles.includes('ROLE_ADMIN');
   }
 
   logout(): void {
