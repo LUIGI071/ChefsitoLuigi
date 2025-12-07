@@ -10,6 +10,9 @@
   color: #f5f5f5;
   box-sizing: border-box;
   position: relative;
+
+  /* 👉 evita la barra horizontal por animaciones */
+  overflow-x: hidden;
 }
 
 /* Layout principal */
@@ -96,7 +99,7 @@
   padding: 0.25rem 0.7rem;
   border-radius: 999px;
   font-size: 0.78rem;
-  background: rgba(248, 250, 252, 0.20);            /* más claro */
+  background: rgba(248, 250, 252, 0.20);
   border: 1px solid rgba(248, 250, 252, 0.45);
   color: #f9fafb;
   cursor: default;
@@ -172,6 +175,18 @@
 
 .sidebar select {
   width: 100%;
+}
+
+/* Sugerencias "Ingredientes que no me gustan" */
+.disliked-suggestions {
+  margin-top: 0.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.disliked-suggestions .chip {
+  font-size: 0.75rem;
 }
 
 /* =======================
@@ -296,15 +311,18 @@
   opacity: 0.8;
 }
 
-/* RESULTADOS DE BÚSQUEDA */
+/* =======================
+   RESULTADOS DE BÚSQUEDA
+   ======================= */
 
 .search-results {
   margin-top: 0.9rem;
 }
 
+/* Usamos columna para que el botón no desplace el texto en layouts estrechos */
 .results-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  display: flex;
+  flex-direction: column;
   gap: 0.6rem;
 }
 
@@ -315,7 +333,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 0.4rem;
+  gap: 0.75rem;
   transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
 }
 
@@ -325,10 +343,12 @@
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
 }
 
-.search-result-actions {
+/* Bloque izquierda: imagen + texto */
+.search-result-main {
   display: flex;
   align-items: center;
-  gap: 0.55rem;
+  gap: 0.6rem;
+  min-width: 0; /* importante para que el ellipsis funcione */
 }
 
 .search-result-image {
@@ -340,15 +360,31 @@
   background: rgba(255, 255, 255, 0.06);
 }
 
-.ingredient-info h4 {
+.ingredient-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+/* Título que no rompe el layout (ellipsis) */
+.ingredient-title {
   margin: 0;
   font-size: 0.9rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .ingredient-sub {
   margin: 0.15rem 0 0;
   font-size: 0.75rem;
   opacity: 0.75;
+}
+
+.search-result-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
 }
 
 /* =======================
@@ -658,7 +694,6 @@
   border: none;
   box-shadow: 0 0 0 0 rgba(255, 159, 67, 0.7);
   animation: pulse-voice 1.2s ease-out infinite;
-
 }
 
 @keyframes pulse-voice {
@@ -710,29 +745,46 @@
 .chef-mouse {
   position: fixed;
   bottom: 1.5rem;
-  right: 1.5rem;
-  font-size: 2.2rem;
-  opacity: 0.65;
+  left: 0;
+  right: 0;
   pointer-events: none;
-  animation: run-mouse 14s linear infinite;
-  filter: drop-shadow(0 0 6px rgba(0, 0, 0, 0.7));
+  display: flex;
+  justify-content: center;
+  opacity: 0.7;
+  font-size: 1.8rem;
+  z-index: 10;
+  animation: mouse-run 18s linear infinite;
 }
 
-@keyframes run-mouse {
+.chef-mouse .mouse {
+  filter: drop-shadow(0 0 8px rgba(0, 0, 0, 0.7));
+}
+
+.chef-mouse .hat {
+  margin-left: 0.3rem;
+}
+
+/* El ratón entra por la izquierda, sale por la derecha,
+   gira y vuelve, sin cambiar el tamaño del layout */
+@keyframes mouse-run {
   0% {
-    transform: translateX(0);
-  }
-  45% {
-    transform: translateX(-40vw);
+    transform: translateX(-110vw);
   }
   50% {
-    transform: translateX(-42vw) scaleX(-1);
+    transform: translateX(110vw);
   }
-  95% {
-    transform: translateX(0) scaleX(-1);
+  50.01% {
+    transform: translateX(110vw) scaleX(-1);
   }
   100% {
-    transform: translateX(0);
+    transform: translateX(-110vw) scaleX(-1);
+  }
+}
+
+/* En móvil lo escondemos para no molestar */
+@media (max-width: 768px) {
+  .chef-mouse {
+    display: none;
   }
 }
 
@@ -782,11 +834,21 @@
   }
 
   .results-grid {
-    grid-template-columns: 1fr;
+    /* en móvil sigue siendo columna, así que no tocamos */
   }
 
   .pantry-grid {
     grid-template-columns: 1fr;
+  }
+
+  .ingredient-card {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .add-btn {
+    width: 100%;
+    justify-content: center;
   }
 }
 
@@ -827,51 +889,4 @@
 .add-btn:hover {
   transform: translateY(-1px);
   box-shadow: 0 6px 14px rgba(0, 0, 0, 0.45);
-}
-
-/* Ratón chef animado de decoración */
-.chef-mouse {
-  position: absolute;
-  bottom: 1.2rem;
-  left: 0;
-  right: 0;
-  pointer-events: none;
-  display: flex;
-  justify-content: center;
-  opacity: 0.65;
-  animation: mouse-run 18s linear infinite;
-  font-size: 1.6rem;
-}
-
-.chef-mouse .mouse {
-  filter: drop-shadow(0 0 8px rgba(0, 0, 0, 0.7));
-}
-
-.chef-mouse .hat {
-  margin-left: 0.3rem;
-}
-
-@keyframes mouse-run {
-  0% {
-    transform: translateX(-55vw) translateY(0);
-  }
-  25% {
-    transform: translateX(-15vw) translateY(-4px);
-  }
-  50% {
-    transform: translateX(15vw) translateY(0);
-  }
-  75% {
-    transform: translateX(45vw) translateY(-4px);
-  }
-  100% {
-    transform: translateX(75vw) translateY(0);
-  }
-}
-
-/* En móvil quitamos el ratón para no molestar */
-@media (max-width: 768px) {
-  .chef-mouse {
-    display: none;
-  }
 }

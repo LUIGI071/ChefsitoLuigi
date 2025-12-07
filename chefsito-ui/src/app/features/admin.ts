@@ -3,14 +3,14 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AdminService, AdminUser } from './admin.service';
-import { AuthService } from '../core/auth/auth.service'; // ajusta ruta si en tu proyecto cambia
+import { AuthService } from '../core/auth/auth.service'; // ← ruta corregida
 
 @Component({
   selector: 'app-admin',
   standalone: true,
   imports: [CommonModule],
   templateUrl: './admin.html',
-  styleUrl: './admin.scss',
+  styleUrls: ['./admin.scss'], // ← propiedad correcta (plural)
 })
 export class Admin implements OnInit {
   private adminService = inject(AdminService);
@@ -32,6 +32,7 @@ export class Admin implements OnInit {
 
     this.adminService.getUsers().subscribe({
       next: (users) => {
+        // Mostrar TODOS los usuarios, sin filtros
         this.users = users;
         this.loading = false;
       },
@@ -53,10 +54,7 @@ export class Admin implements OnInit {
     });
   }
 
-  isAdminRole(user: AdminUser): boolean {
-    return (user.roles || []).includes('ROLE_ADMIN');
-  }
-
+  // Comprueba si el usuario logueado es el mismo que el de la fila
   isSelf(user: AdminUser): boolean {
     const myId = this.authService.getUserId
       ? this.authService.getUserId()
@@ -64,6 +62,7 @@ export class Admin implements OnInit {
     return myId !== null && user.id === myId;
   }
 
+  // Eliminar usuario (única acción del panel)
   deleteUser(user: AdminUser): void {
     if (this.isSelf(user)) {
       alert('No puedes borrarte a ti mismo 😂');
@@ -73,7 +72,9 @@ export class Admin implements OnInit {
     const ok = confirm(
       `¿Seguro que quieres eliminar al usuario ${user.email}? Esta acción no se puede deshacer.`
     );
-    if (!ok) return;
+    if (!ok) {
+      return;
+    }
 
     this.adminService.deleteUser(user.id).subscribe({
       next: () => {
@@ -81,35 +82,6 @@ export class Admin implements OnInit {
       },
       error: () => {
         alert('Error al eliminar el usuario');
-      },
-    });
-  }
-
-  toggleAdmin(user: AdminUser): void {
-    if (this.isSelf(user)) {
-      alert('No tiene sentido quitarte tu propio rol aquí 🙃');
-      return;
-    }
-
-    const rolesSet = new Set(user.roles || []);
-
-    if (rolesSet.has('ROLE_ADMIN')) {
-      rolesSet.delete('ROLE_ADMIN');
-    } else {
-      rolesSet.add('ROLE_ADMIN');
-      rolesSet.add('ROLE_USER');
-    }
-
-    const newRoles = Array.from(rolesSet);
-
-    this.adminService.updateUserRoles(user.id, newRoles).subscribe({
-      next: (updated) => {
-        this.users = this.users.map((u) =>
-          u.id === updated.id ? { ...u, roles: updated.roles } : u
-        );
-      },
-      error: () => {
-        alert('Error al actualizar los roles del usuario');
       },
     });
   }

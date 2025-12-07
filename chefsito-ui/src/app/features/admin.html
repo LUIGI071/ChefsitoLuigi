@@ -35,12 +35,9 @@
           </span>
       </td>
       <td class="actions">
-        <button type="button" (click)="toggleAdmin(u)">
-          {{ isAdminRole(u) ? 'Quitar ADMIN' : 'Hacer ADMIN' }}
-        </button>
-
         <button
           type="button"
+          class="danger-btn"
           (click)="deleteUser(u)"
           [disabled]="isSelf(u)"
           title="No puedes borrarte a ti mismo"

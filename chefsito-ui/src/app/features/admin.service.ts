@@ -45,15 +45,18 @@ export class AdminService {
   /**
    * Actualizar roles de un usuario.
    * Solo toca la lista de roles.
+   * PATCH /api/admin/users/{id}/roles
    */
   updateUserRoles(userId: number, roles: string[]): Observable<AdminUser> {
-    return this.http.patch<AdminUser>(`${this.API_URL}/users/${userId}/roles`, {
-      roles,
-    });
+    return this.http.patch<AdminUser>(
+      `${this.API_URL}/users/${userId}/roles`,
+      { roles }
+    );
   }
 
   /**
    * Eliminar usuario (desde panel admin).
+   * DELETE /api/admin/users/{id}
    */
   deleteUser(userId: number): Observable<void> {
     return this.http.delete<void>(`${this.API_URL}/users/${userId}`);

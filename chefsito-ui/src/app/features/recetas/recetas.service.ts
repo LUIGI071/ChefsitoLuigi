@@ -2,6 +2,7 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../../environments/environment';
 
 // Debe coincidir con OpenAiRecipeResponse.java (los nuevos campos son opcionales)
 export interface RecipeRecommendation {
@@ -14,7 +15,7 @@ export interface RecipeRecommendation {
   difficulty: string | null;
   category: string | null;
 
-  // Opcional: por si en el futuro el backend ya trae imagen
+  // Opcional: para poder usar r.imageUrl en recetas.component.ts
   imageUrl?: string | null;
 }
 
@@ -38,8 +39,9 @@ export interface RecipeRequest {
 export class RecetasService {
   private http = inject(HttpClient);
 
-  // Usamos ruta relativa para que el proxy + interceptor funcionen
-  private readonly API_URL = '/api/recommendations';
+  // En prod -> https://chefsito-backend.onrender.com/api/recommendations
+  // En dev  -> http://localhost:8080/api/recommendations
+  private readonly API_URL = `${environment.apiBaseUrl}/recommendations`;
 
   /**
    * GET /api/recommendations/for-user/{userId}

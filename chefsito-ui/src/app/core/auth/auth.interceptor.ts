@@ -19,7 +19,7 @@ export class AuthInterceptor implements HttpInterceptor {
   ): Observable<HttpEvent<unknown>> {
     const token = this.authService.getToken();
 
-    // 🚀 Versión simple: si hay token, lo añadimos SIEMPRE
+    // Si hay token, añadimos Authorization: Bearer <token> a todas las peticiones
     if (token) {
       request = request.clone({
         setHeaders: {

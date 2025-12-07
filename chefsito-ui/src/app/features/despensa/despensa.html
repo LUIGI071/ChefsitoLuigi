@@ -52,7 +52,7 @@
             type="text"
             [(ngModel)]="allergySearchText"
             (keyup.enter)="buscarAlergia()"
-            placeholder="Buscar alérgeno (huevo, leche, frutos secos...)"
+            placeholder="Buscar alérgeno (huevo, leche, frutos secos.)"
           />
           <button
             type="button"
@@ -73,7 +73,7 @@
             *ngFor="let ing of allergySearchResults"
             (click)="agregarAlergia(ing)"
           >
-            {{ ing.nameEs || ing.name }}
+            {{ getIngredientDisplayName(ing) }}
           </button>
         </div>
 
@@ -114,8 +114,9 @@
           <input
             type="text"
             [(ngModel)]="dislikedInput"
+            (input)="onDislikedInputChange(dislikedInput)"
             (keyup.enter)="addDislikedIngredient()"
-            placeholder="Ej: aceitunas, cilantro..."
+            placeholder="Ej: aceitunas, cilantro."
           />
           <button
             type="button"
@@ -123,6 +124,20 @@
             (click)="addDislikedIngredient()"
           >
             Añadir
+          </button>
+        </div>
+
+        <div
+          class="disliked-suggestions"
+          *ngIf="filteredDislikedSuggestions.length > 0"
+        >
+          <button
+            type="button"
+            class="chip ghost"
+            *ngFor="let sug of filteredDislikedSuggestions"
+            (click)="addDislikedIngredient(sug)"
+          >
+            {{ sug }}
           </button>
         </div>
 
@@ -187,7 +202,7 @@
             type="text"
             [(ngModel)]="searchText"
             (keyup.enter)="onSearch()"
-            placeholder="Tomate, arroz, pollo..."
+            placeholder="Tomate, arroz, pollo."
           />
 
           <button
@@ -224,7 +239,7 @@
 
         <!-- ESTADO DE BÚSQUEDA -->
         <div class="search-status" *ngIf="searching">
-          Buscando ingredientes...
+          Buscando ingredientes…
         </div>
 
         <!-- ERROR (ej: no se pudo añadir a despensa) -->
@@ -255,7 +270,7 @@
               *ngFor="let ing of searchResults"
             >
               <!-- IZQUIERDA: imagen + texto -->
-              <div class="search-result-actions">
+              <div class="search-result-main">
                 <img
                   *ngIf="
                     ing.imageUrl ||
@@ -267,12 +282,14 @@
                     ing['image'] ||
                     ing['ingredientImageUrl']
                   "
-                  [alt]="ing.nameEs || ing.name"
+                  [alt]="getIngredientDisplayName(ing)"
                   class="search-result-image"
                 />
 
                 <div class="ingredient-info">
-                  <h4>{{ ing.nameEs || ing.name }}</h4>
+                  <h4 class="ingredient-title">
+                    {{ getIngredientDisplayName(ing) }}
+                  </h4>
                   <p class="ingredient-sub">
                     {{ ing.category || 'Ingrediente' }}
                   </p>
@@ -298,7 +315,7 @@
         <!-- Loading -->
         <div class="loading" *ngIf="loading">
           <span class="spinner"></span>
-          Cargando tus ingredientes...
+          Cargando tus ingredientes.
         </div>
 
         <!-- Filtros de categoría -->
@@ -342,22 +359,18 @@
             <div
               class="pantry-image-wrapper"
               [ngClass]="getQuantitySizeClass(item)"
-              *ngIf="item.ingredientImageUrl"
+              *ngIf="item['ingredientImageUrl']"
             >
               <img
-                [src]="item.ingredientImageUrl"
-                [alt]="item.ingredientNameEs || item.ingredientName"
+                [src]="item['ingredientImageUrl']"
+                [alt]="getPantryItemDisplayName(item)"
                 class="pantry-image"
               />
             </div>
 
             <header class="pantry-card-header">
               <h3>
-                {{
-                  item.ingredientNameEs ||
-                  item.ingredientName ||
-                  ('Ingrediente #' + item.ingredientId)
-                }}
+                {{ getPantryItemDisplayName(item) || ('Ingrediente #' + item.ingredientId) }}
               </h3>
               <span class="pantry-category">
                 {{ getCategoryForItem(item) }}
@@ -386,8 +399,8 @@
                 </button>
                 <span class="qty-value">
                   {{ item.quantity }}
-                  <span class="qty-unit" *ngIf="item.unit">
-                    {{ item.unit }}
+                  <span class="qty-unit" *ngIf="item['unit']">
+                    {{ item['unit'] }}
                   </span>
                 </span>
                 <button

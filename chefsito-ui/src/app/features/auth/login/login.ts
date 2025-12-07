@@ -20,7 +20,7 @@ import { AuthService } from '../../../core/auth/auth.service';
   styleUrls: ['./login.scss'],
 })
 export class LoginComponent {
-  // Formulario (se inicializa en el constructor)
+  // Formulario tipado
   form!: FormGroup<{
     email: FormControl<string | null>;
     password: FormControl<string | null>;
@@ -36,11 +36,12 @@ export class LoginComponent {
     private router: Router,
     private fb: FormBuilder
   ) {
+    // 📌 Validación cambiada a minlength(1)
     this.form = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       password: [
         '',
-        [Validators.required, Validators.minLength(6)],
+        [Validators.required, Validators.minLength(1)], // <--- AQUÍ EL CAMBIO
       ],
       rememberMe: [true],
     }) as FormGroup<{
@@ -50,7 +51,9 @@ export class LoginComponent {
     }>;
   }
 
-  // Getters públicos para el HTML
+  // ============================
+  // Getters usados en el HTML
+  // ============================
   get email() {
     return this.form.get('email');
   }
@@ -63,6 +66,9 @@ export class LoginComponent {
     this.passwordVisible = !this.passwordVisible;
   }
 
+  // ============================
+  // Submit del formulario
+  // ============================
   submit(): void {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
@@ -70,6 +76,7 @@ export class LoginComponent {
     }
 
     const { email, password } = this.form.value;
+
     if (!email || !password) {
       return;
     }

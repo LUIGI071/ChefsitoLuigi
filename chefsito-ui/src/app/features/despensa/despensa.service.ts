@@ -10,13 +10,14 @@ export interface PantryItem {
   id: number;
   ingredientId: number;
 
+  // nombres que se usan en el componente (líneas 220, 722, 723)
   ingredientName?: string;
   ingredientNameEs?: string;
 
   quantity: number;
   unit: string | null;
 
-  // 🔹 Campo requerido por el HTML (evita error en Render)
+  // 🔹 Campo requerido por el HTML (evita error en Render si no hay imagen)
   ingredientImageUrl?: string | null;
 }
 
@@ -61,7 +62,9 @@ export class DespensaService {
   /** Actualizar cantidad */
   updateQuantity(id: number, quantity: number): Observable<PantryItem> {
     const params = new HttpParams().set('quantity', quantity.toString());
-    return this.http.put<PantryItem>(`${this.pantryUrl}/${id}`, null, { params });
+    return this.http.put<PantryItem>(`${this.pantryUrl}/${id}`, null, {
+      params,
+    });
   }
 
   /** Buscar ingredientes */

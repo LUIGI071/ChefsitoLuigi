@@ -1,6 +1,9 @@
-import { Injectable } from '@angular/core';
+// src/app/features/despensa/recommendations.service.ts
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+
+import { environment } from '../../../environments/environment';
 
 // Equivale a OpenAiRecipeResponse.java
 export interface RecipeRecommendation {
@@ -14,40 +17,42 @@ export interface RecipeRecommendation {
   category: string | null;
 }
 
-// Equivale a OpenAiRecipeRequest.java + UserPreferencesDto.java
-export interface UserPreferencesDto {
-  allergies: string[];
-  intolerances: string[];
-  dislikedIngredients: string[];
-  dietType: string | null;
-  cookingSkillLevel: string | null;
-}
-
+/**
+ * Petición para obtener recomendaciones a partir de ingredientes
+ * y/o preferencias del usuario.
+ */
 export interface RecipeRequest {
-  userId: number;
-  availableIngredients: string[];
-  preferences: UserPreferencesDto;
-  maxRecipes: number;
+  userId?: number;
+  ingredients?: string[];
+  preferences?: string[];
 }
 
 @Injectable({
   providedIn: 'root',
 })
 export class RecommendationsService {
-  private readonly API_URL = '/api/recommendations';
+  private readonly http = inject(HttpClient);
 
-  constructor(private http: HttpClient) {}
+  // Base API: https://.../api/recommendations
+  private readonly API_URL = `${environment.apiBaseUrl}/recommendations`;
 
-  // GET /api/recommendations/for-user/{userId}
+  /**
+   * GET /api/recommendations/for-user/{userId}
+   * Devuelve las recomendaciones del backend para el usuario.
+   */
   getForUser(userId: number): Observable<RecipeRecommendation[]> {
     return this.http.get<RecipeRecommendation[]>(
       `${this.API_URL}/for-user/${userId}`
     );
   }
 
-  // POST /api/recommendations/by-ingredients
-  // (por si quieres mandar los ingredientes actuales de la despensa + preferencias)
-  getByIngredients(request: RecipeRequest): Observable<RecipeRecommendation[]> {
+  /**
+   * POST /api/recommendations/by-ingredients
+   * (por si quieres mandar los ingredientes actuales de la despensa + preferencias)
+   */
+  getByIngredients(
+    request: RecipeRequest
+  ): Observable<RecipeRecommendation[]> {
     return this.http.post<RecipeRecommendation[]>(
       `${this.API_URL}/by-ingredients`,
       request

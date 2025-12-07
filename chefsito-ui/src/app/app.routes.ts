@@ -1,6 +1,7 @@
 // src/app/app.routes.ts
 import { Routes } from '@angular/router';
 import { LoginComponent } from './features/auth/login/login';
+import { authGuard } from './core/auth/auth.guard';
 
 export const routes: Routes = [
   // ============================
@@ -12,16 +13,30 @@ export const routes: Routes = [
   },
 
   // ============================
-  // LAYOUT PRINCIPAL
+  // REGISTRO (sin layout)
+  // ============================
+  {
+    path: 'register',
+    loadComponent: () =>
+      import('./features/auth/register').then(
+        (m) => m.RegisterComponent
+      ),
+  },
+
+  // ============================
+  // LAYOUT PRINCIPAL PROTEGIDO
   // ============================
   {
     path: '',
+    canActivate: [authGuard],
     loadComponent: () =>
       import('./core/layout/main-layout/main-layout.component').then(
         (m) => m.MainLayoutComponent
       ),
     children: [
+      // ============================
       // DESPENSA
+      // ============================
       {
         path: 'despensa',
         loadComponent: () =>
@@ -30,7 +45,9 @@ export const routes: Routes = [
           ),
       },
 
+      // ============================
       // RECETAS
+      // ============================
       {
         path: 'recetas',
         loadComponent: () =>
@@ -39,7 +56,9 @@ export const routes: Routes = [
           ),
       },
 
-      // PERFIL CULINARIO
+      // ============================
+      // PERFIL
+      // ============================
       {
         path: 'perfil',
         loadComponent: () =>
@@ -48,16 +67,20 @@ export const routes: Routes = [
           ),
       },
 
+      // ============================
       // PANEL ADMIN
+      // ============================
       {
         path: 'admin',
         loadComponent: () =>
           import('./features/admin').then(
-            (m) => m.Admin          // nombre de la clase en admin.ts
+            (m) => m.Admin
           ),
       },
 
-      // Redirección por defecto
+      // ============================
+      // REDIRECCIÓN POR DEFECTO
+      // ============================
       {
         path: '',
         pathMatch: 'full',
@@ -74,4 +97,3 @@ export const routes: Routes = [
     redirectTo: 'despensa',
   },
 ];
-

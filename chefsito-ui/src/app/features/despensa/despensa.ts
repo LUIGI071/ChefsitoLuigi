@@ -1,6 +1,6 @@
 // src/app/features/despensa/despensa.ts
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, NgClass } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 
@@ -25,7 +25,7 @@ import { AuthService } from '../../core/auth/auth.service';
 @Component({
   selector: 'app-despensa',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, FormsModule, RouterLink, NgClass],
   templateUrl: './despensa.html',
   styleUrls: ['./despensa.scss'],
 })
@@ -67,6 +67,51 @@ export class DespensaComponent implements OnInit {
   // Ingredientes que no le gustan
   dislikedInput = '';
 
+  // Sugerencias base y filtradas para "Ingredientes que no me gustan"
+  dislikedSuggestions: string[] = [
+    'aceitunas',
+    'pepino',
+    'cilantro',
+    'cebolla cruda',
+    'ajo',
+    'pimiento verde',
+    'pimiento rojo',
+    'brócoli',
+    'coliflor',
+    'hígado',
+    'marisco',
+    'picante',
+  ];
+  filteredDislikedSuggestions: string[] = [];
+
+  // 👉 Diccionario provisional de traducciones EN → ES solo en el front
+  private ingredientTranslations: Record<string, string> = {
+    // pollo y derivados
+    chicken: 'Pollo',
+    'chicken leg': 'Pierna de pollo',
+    'chicken legs': 'Piernas de pollo',
+    'chicken thigh': 'Muslo de pollo',
+    'chicken thighs': 'Muslos de pollo',
+    'chicken breast': 'Pechuga de pollo',
+    'chicken breasts': 'Pechugas de pollo',
+    'chicken liver': 'Hígado de pollo',
+    'chicken stock': 'Caldo de pollo',
+    'chicken stock cube': 'Cubito de caldo de pollo',
+    'chicken drumstick': 'Muslo de pollo',
+    'chicken drumsticks': 'Muslos de pollo',
+
+    // básicos frecuentes
+    beef: 'Ternera',
+    pork: 'Cerdo',
+    egg: 'Huevo',
+    eggs: 'Huevos',
+    onion: 'Cebolla',
+    garlic: 'Ajo',
+    milk: 'Leche',
+    butter: 'Mantequilla',
+    bread: 'Pan',
+  };
+
   // Barra lateral (menú hamburguesa)
   sidebarOpen = false;
 
@@ -87,6 +132,47 @@ export class DespensaComponent implements OnInit {
     if (anyAuth.getUserName) {
       this.userName = anyAuth.getUserName();
     }
+  }
+
+  // ============================
+  //   HELPERS NOMBRES (TRADUCCIÓN FRONT)
+  // ============================
+
+  /**
+   * Devuelve un nombre en español a partir de nameEs y name,
+   * usando el diccionario local si hace falta.
+   */
+  private getDisplayNameFromPair(
+    nameEs?: string | null,
+    name?: string | null
+  ): string {
+    // 1) Si ya viene en español desde backend, respetamos
+    if (nameEs && nameEs.trim()) {
+      return nameEs;
+    }
+
+    // 2) Miramos en el diccionario EN → ES
+    const raw = (name || '').toLowerCase().trim();
+    if (raw && this.ingredientTranslations[raw]) {
+      return this.ingredientTranslations[raw];
+    }
+
+    // 3) Si no hay nada mejor, devolvemos el name original
+    return name || '';
+  }
+
+  /** Para objetos Ingredient (búsqueda, alergias, etc.) */
+  getIngredientDisplayName(ing: Ingredient): string {
+    return this.getDisplayNameFromPair(ing.nameEs, ing.name);
+  }
+
+  /** Para objetos PantryItem (lo que ya está en la despensa) */
+  getPantryItemDisplayName(item: PantryItem): string {
+    const anyItem: any = item as any;
+    return this.getDisplayNameFromPair(
+      anyItem.ingredientNameEs,
+      anyItem.ingredientName
+    );
   }
 
   // ============================
@@ -129,6 +215,7 @@ export class DespensaComponent implements OnInit {
       },
     });
   }
+
   // AÑADIR desde buscador
   addIngredientToPantry(ing: Ingredient): void {
     if (!ing || ing.id == null) {
@@ -151,11 +238,12 @@ export class DespensaComponent implements OnInit {
         console.error('Error añadiendo ingrediente', err);
         this.error =
           err?.error?.message ||
-          `No se pudo añadir el ingrediente a la despensa (código ${err?.status ?? 'desconocido'})`;
+          `No se pudo añadir el ingrediente a la despensa (código ${
+            err?.status ?? 'desconocido'
+          })`;
       },
     });
   }
-
 
   // ===== ELIMINAR con confirmación =====
 
@@ -172,9 +260,7 @@ export class DespensaComponent implements OnInit {
 
     this.despensaService.deleteItem(item.id).subscribe({
       next: () => {
-        this.alimentos = this.alimentos.filter(
-          (a) => a.id !== item.id
-        );
+        this.alimentos = this.alimentos.filter((a) => a.id !== item.id);
         this.rebuildCategories();
       },
       error: (err: unknown) => {
@@ -193,22 +279,18 @@ export class DespensaComponent implements OnInit {
       return;
     }
 
-    this.despensaService
-      .updateQuantity(item.id, nuevaCantidad)
-      .subscribe({
-        next: (actualizado: PantryItem) => {
-          this.alimentos = this.alimentos.map((a) =>
-            a.id === item.id
-              ? { ...a, quantity: actualizado.quantity }
-              : a
-          );
-          this.rebuildCategories();
-        },
-        error: (err: unknown) => {
-          console.error(err);
-          this.error = 'No se pudo actualizar la cantidad';
-        },
-      });
+    this.despensaService.updateQuantity(item.id, nuevaCantidad).subscribe({
+      next: (actualizado: PantryItem) => {
+        this.alimentos = this.alimentos.map((a) =>
+          a.id === item.id ? { ...a, quantity: actualizado.quantity } : a
+        );
+        this.rebuildCategories();
+      },
+      error: (err: unknown) => {
+        console.error(err);
+        this.error = 'No se pudo actualizar la cantidad';
+      },
+    });
   }
 
   // ============================
@@ -216,17 +298,18 @@ export class DespensaComponent implements OnInit {
   // ============================
 
   private getCategoryForItemInternal(item: PantryItem): string {
+    const anyItem: any = item as any;
     const rawName =
-      item.ingredientNameEs || item.ingredientName || '';
+      anyItem.ingredientNameEs || anyItem.ingredientName || '';
     const name = rawName.toLowerCase();
 
     // Tokenizamos: "repollo chino" -> ["repollo", "chino"]
-    const tokens = name
+    const tokens: string[] = name
       .split(/[\s,;.\-]+/)
-      .filter((w) => !!w);
+      .filter((w: string) => !!w);
 
     const hasToken = (candidates: string[]): boolean =>
-      tokens.some((t) => candidates.includes(t));
+      tokens.some((t: string) => candidates.includes(t));
 
     // Verduras
     if (
@@ -312,12 +395,7 @@ export class DespensaComponent implements OnInit {
 
     // Aceites
     if (
-      hasToken([
-        'aceite',
-        'oliva',
-        'girasol',
-        'margarina',
-      ])
+      hasToken(['aceite', 'oliva', 'girasol', 'margarina'])
     ) {
       return 'Aceites';
     }
@@ -404,8 +482,7 @@ export class DespensaComponent implements OnInit {
     }
     return this.alimentos.filter(
       (item) =>
-        this.getCategoryForItemInternal(item) ===
-        this.categoryFilter
+        this.getCategoryForItemInternal(item) === this.categoryFilter
     );
   }
 
@@ -651,37 +728,29 @@ export class DespensaComponent implements OnInit {
       };
     }
 
-    const nombre = ing.nameEs || ing.name;
-    if (
-      nombre &&
-      !this.userProfile.allergies.includes(nombre)
-    ) {
+    const nombre = this.getIngredientDisplayName(ing);
+    if (nombre && !this.userProfile.allergies.includes(nombre)) {
       this.userProfile.allergies = [
         ...this.userProfile.allergies,
         nombre,
       ];
     }
 
-    this.userProfileService
-      .createOrUpdate(this.userProfile)
-      .subscribe({
-        next: (updated: UserProfile) => {
-          this.userProfile = {
-            userId: updated.userId,
-            allergies: updated.allergies || [],
-            intolerances: updated.intolerances || [],
-            dislikedIngredients:
-              updated.dislikedIngredients || [],
-
-            dietType: updated.dietType || null,
-            cookingSkillLevel:
-              updated.cookingSkillLevel || null,
-          };
-        },
-        error: (err: unknown) => {
-          console.error('Error guardando alergia', err);
-        },
-      });
+    this.userProfileService.createOrUpdate(this.userProfile).subscribe({
+      next: (updated: UserProfile) => {
+        this.userProfile = {
+          userId: updated.userId,
+          allergies: updated.allergies || [],
+          intolerances: updated.intolerances || [],
+          dislikedIngredients: updated.dislikedIngredients || [],
+          dietType: updated.dietType || null,
+          cookingSkillLevel: updated.cookingSkillLevel || null,
+        };
+      },
+      error: (err: unknown) => {
+        console.error('Error guardando alergia', err);
+      },
+    });
 
     this.allergySearchText = '';
     this.allergySearchResults = [];
@@ -694,33 +763,30 @@ export class DespensaComponent implements OnInit {
       (x) => x !== a
     );
 
-    this.userProfileService
-      .createOrUpdate(this.userProfile)
-      .subscribe({
-        next: (updated: UserProfile) => {
-          this.userProfile = {
-            userId: updated.userId,
-            allergies: updated.allergies || [],
-            intolerances: updated.intolerances || [],
-            dislikedIngredients:
-              updated.dislikedIngredients || [],
-            dietType: updated.dietType || null,
-            cookingSkillLevel:
-              updated.cookingSkillLevel || null,
-          };
-        },
-        error: (err: unknown) => {
-          console.error('Error eliminando alergia', err);
-        },
-      });
+    this.userProfileService.createOrUpdate(this.userProfile).subscribe({
+      next: (updated: UserProfile) => {
+        this.userProfile = {
+          userId: updated.userId,
+          allergies: updated.allergies || [],
+          intolerances: updated.intolerances || [],
+          dislikedIngredients: updated.dislikedIngredients || [],
+          dietType: updated.dietType || null,
+          cookingSkillLevel: updated.cookingSkillLevel || null,
+        };
+      },
+      error: (err: unknown) => {
+        console.error('Error eliminando alergia', err);
+      },
+    });
   }
 
   hasAllergyForItem(item: PantryItem): string[] {
     if (!this.userProfile?.allergies?.length) return [];
 
+    const anyItem: any = item as any;
     const itemNameNorm = this.normalizeText(
-      item.ingredientNameEs ||
-      item.ingredientName ||
+      anyItem.ingredientNameEs ||
+      anyItem.ingredientName ||
       ''
     );
 
@@ -735,48 +801,65 @@ export class DespensaComponent implements OnInit {
 
   // ---- Ingredientes que no le gustan ----
 
-  addDislikedIngredient(): void {
-    const value = this.dislikedInput.trim();
-    if (!value || !this.userProfile) return;
+  /**
+   * Añadir un ingrediente que no le gusta al usuario.
+   * Puede venir desde el input libre o desde una sugerencia (chip).
+   */
+  addDislikedIngredient(suggestion?: string): void {
+    if (!this.userProfile) return;
+
+    const value = (suggestion ?? this.dislikedInput).trim();
+    if (!value) return;
 
     const list = this.userProfile.dislikedIngredients || [];
-    if (
-      !list.some(
-        (x) =>
-          this.normalizeText(x) ===
-          this.normalizeText(value)
-      )
-    ) {
-      this.userProfile.dislikedIngredients = [
-        ...list,
-        value,
-      ];
+    const normValue = this.normalizeText(value);
+
+    if (!list.some((x) => this.normalizeText(x) === normValue)) {
+      this.userProfile.dislikedIngredients = [...list, value];
     }
 
-    this.userProfileService
-      .createOrUpdate(this.userProfile)
-      .subscribe({
-        next: (updated: UserProfile) => {
-          this.userProfile = {
-            userId: updated.userId,
-            allergies: updated.allergies || [],
-            intolerances: updated.intolerances || [],
-            dislikedIngredients:
-              updated.dislikedIngredients || [],
+    this.userProfileService.createOrUpdate(this.userProfile).subscribe({
+      next: (updated: UserProfile) => {
+        this.userProfile = {
+          userId: updated.userId,
+          allergies: updated.allergies || [],
+          intolerances: updated.intolerances || [],
+          dislikedIngredients: updated.dislikedIngredients || [],
+          dietType: updated.dietType || null,
+          cookingSkillLevel: updated.cookingSkillLevel || null,
+        };
+        this.dislikedInput = '';
+        this.filteredDislikedSuggestions = [];
+      },
+      error: (err: unknown) => {
+        console.error(
+          'Error guardando ingredientes que no le gustan',
+          err
+        );
+      },
+    });
+  }
 
-            dietType: updated.dietType || null,
-            cookingSkillLevel:
-              updated.cookingSkillLevel || null,
-          };
-          this.dislikedInput = '';
-        },
-        error: (err: unknown) => {
-          console.error(
-            'Error guardando ingredientes que no le gustan',
-            err
-          );
-        },
-      });
+  /**
+   * Filtra las sugerencias según lo que se escribe en el input.
+   */
+  onDislikedInputChange(term: string): void {
+    const q = term.trim().toLowerCase();
+
+    if (!q) {
+      this.filteredDislikedSuggestions = [];
+      return;
+    }
+
+    this.filteredDislikedSuggestions = this.dislikedSuggestions
+      .filter((s) => s.toLowerCase().includes(q))
+      .filter(
+        (s) =>
+          !this.userProfile?.dislikedIngredients?.some(
+            (x) =>
+              this.normalizeText(x) === this.normalizeText(s)
+          )
+      );
   }
 
   removeDislikedIngredient(value: string): void {
@@ -787,30 +870,24 @@ export class DespensaComponent implements OnInit {
         (x) => x !== value
       );
 
-    this.userProfileService
-      .createOrUpdate(this.userProfile)
-      .subscribe({
-        next: (updated: UserProfile) => {
-          this.userProfile = {
-            userId: updated.userId,
-            allergies: updated.allergies || [],
-
-            intolerances: updated.intolerances || [],
-
-            dislikedIngredients:
-              updated.dislikedIngredients || [],
-            dietType: updated.dietType || null,
-            cookingSkillLevel:
-              updated.cookingSkillLevel || null,
-          };
-        },
-        error: (err: unknown) => {
-          console.error(
-            'Error eliminando ingrediente que no le gusta',
-            err
-          );
-        },
-      });
+    this.userProfileService.createOrUpdate(this.userProfile).subscribe({
+      next: (updated: UserProfile) => {
+        this.userProfile = {
+          userId: updated.userId,
+          allergies: updated.allergies || [],
+          intolerances: updated.intolerances || [],
+          dislikedIngredients: updated.dislikedIngredients || [],
+          dietType: updated.dietType || null,
+          cookingSkillLevel: updated.cookingSkillLevel || null,
+        };
+      },
+      error: (err: unknown) => {
+        console.error(
+          'Error eliminando ingrediente que no le gusta',
+          err
+        );
+      },
+    });
   }
 
   // ---- Tipo de dieta ----
@@ -820,30 +897,21 @@ export class DespensaComponent implements OnInit {
 
     this.userProfile.dietType = value || null;
 
-    this.userProfileService
-      .createOrUpdate(this.userProfile)
-      .subscribe({
-        next: (updated: UserProfile) => {
-          this.userProfile = {
-            userId: updated.userId,
-            allergies: updated.allergies || [],
-
-            intolerances: updated.intolerances || [],
-
-            dislikedIngredients:
-              updated.dislikedIngredients || [],
-            dietType: updated.dietType || null,
-            cookingSkillLevel:
-              updated.cookingSkillLevel || null,
-          };
-        },
-        error: (err: unknown) => {
-          console.error(
-            'Error actualizando tipo de dieta',
-            err
-          );
-        },
-      });
+    this.userProfileService.createOrUpdate(this.userProfile).subscribe({
+      next: (updated: UserProfile) => {
+        this.userProfile = {
+          userId: updated.userId,
+          allergies: updated.allergies || [],
+          intolerances: updated.intolerances || [],
+          dislikedIngredients: updated.dislikedIngredients || [],
+          dietType: updated.dietType || null,
+          cookingSkillLevel: updated.cookingSkillLevel || null,
+        };
+      },
+      error: (err: unknown) => {
+        console.error('Error actualizando tipo de dieta', err);
+      },
+    });
   }
 
   getDietLabel(): string {

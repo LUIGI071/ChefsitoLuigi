@@ -1,4 +1,4 @@
-// src/environments/environment.development.ts  (para ng serve)
+// src/environments/environment.development.ts
 export const environment = {
   production: false,
   apiBaseUrl: 'http://localhost:8080/api',

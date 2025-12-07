@@ -41,12 +41,7 @@ export class AuthService {
 
     return this.http.post<LoginResponse>(`${this.API_URL}/login`, body).pipe(
       tap((res) => {
-        // Guardar datos del usuario autenticado
-        localStorage.setItem('token', res.token);
-        localStorage.setItem('email', res.email);
-        localStorage.setItem('userId', String(res.id));
-        localStorage.setItem('fullName', res.fullName ?? '');
-        localStorage.setItem('roles', JSON.stringify(res.roles ?? []));
+        this.storeSession(res);
       })
     );
   }
@@ -69,36 +64,56 @@ export class AuthService {
 
     return this.http.post<LoginResponse>(`${this.API_URL}/register`, body).pipe(
       tap((res) => {
-        localStorage.setItem('token', res.token);
-        localStorage.setItem('email', res.email);
-        localStorage.setItem('userId', String(res.id));
-        localStorage.setItem('fullName', res.fullName ?? '');
-        localStorage.setItem('roles', JSON.stringify(res.roles ?? []));
+        this.storeSession(res);
       })
     );
   }
 
+  /**
+   * Guardar la sesión en sessionStorage.
+   * (token + info básica del usuario)
+   */
+  private storeSession(res: LoginResponse): void {
+    sessionStorage.setItem('token', res.token);
+    sessionStorage.setItem('email', res.email);
+    sessionStorage.setItem('userId', String(res.id));
+    sessionStorage.setItem('fullName', res.fullName ?? '');
+    sessionStorage.setItem('roles', JSON.stringify(res.roles ?? []));
+  }
+
+  /**
+   * Eliminar completamente la sesión en cliente.
+   */
   logout(): void {
-    localStorage.removeItem('token');
-    localStorage.removeItem('email');
-    localStorage.removeItem('userId');
-    localStorage.removeItem('fullName');
-    localStorage.removeItem('roles');
+    sessionStorage.removeItem('token');
+    sessionStorage.removeItem('email');
+    sessionStorage.removeItem('userId');
+    sessionStorage.removeItem('fullName');
+    sessionStorage.removeItem('roles');
   }
 
+  /**
+   * Obtener el token actual (o null si no hay).
+   */
   getToken(): string | null {
-    return localStorage.getItem('token');
+    return sessionStorage.getItem('token');
   }
 
+  /**
+   * Indica si hay sesión activa en el cliente.
+   */
   isLoggedIn(): boolean {
     return !!this.getToken();
   }
 
+  /**
+   * Obtener el usuario actual (a partir de sessionStorage).
+   */
   getCurrentUser(): CurrentUser | null {
-    const id = localStorage.getItem('userId');
-    const email = localStorage.getItem('email');
-    const fullName = localStorage.getItem('fullName');
-    const rolesRaw = localStorage.getItem('roles');
+    const id = sessionStorage.getItem('userId');
+    const email = sessionStorage.getItem('email');
+    const fullName = sessionStorage.getItem('fullName');
+    const rolesRaw = sessionStorage.getItem('roles');
 
     if (!id || !email) {
       return null;
@@ -119,8 +134,11 @@ export class AuthService {
     };
   }
 
+  /**
+   * Obtener solo el ID del usuario actual (o null).
+   */
   getUserId(): number | null {
-    const id = localStorage.getItem('userId');
+    const id = sessionStorage.getItem('userId');
     return id ? Number(id) : null;
   }
 }
