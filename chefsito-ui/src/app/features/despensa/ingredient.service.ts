@@ -1,6 +1,8 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../../environments/environment';
+
 
 export interface Ingredient {
   id: number;
@@ -25,7 +27,7 @@ export interface VoiceSearchResponse {
 })
 export class IngredientService {
   private http = inject(HttpClient);
-  private readonly API_URL = '/api/ingredients';
+  private readonly API_URL = `${environment.apiBaseUrl}/ingredients`;
 
   search(query: string, limit = 10, language = 'es'): Observable<Ingredient[]> {
     return this.http.get<Ingredient[]>(`${this.API_URL}/smart-search`, {
