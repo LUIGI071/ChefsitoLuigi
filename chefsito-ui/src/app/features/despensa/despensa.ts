@@ -206,7 +206,8 @@ export class DespensaComponent implements OnInit {
 
     this.despensaService.addItem(nuevo).subscribe({
       next: (creado: PantryItem) => {
-        this.alimentos = [...this.alimentos, creado];
+        // 👉 nuevo arriba del todo
+        this.alimentos = [creado, ...this.alimentos];
         this.rebuildCategories();
       },
       error: (err: unknown) => {
@@ -230,7 +231,8 @@ export class DespensaComponent implements OnInit {
 
     this.despensaService.addItem(nuevo).subscribe({
       next: (creado: PantryItem) => {
-        this.alimentos = [...this.alimentos, creado];
+        // 👉 lo metemos al principio para que se vea arriba
+        this.alimentos = [creado, ...this.alimentos];
         this.rebuildCategories();
         this.error = null;
       },
@@ -521,10 +523,12 @@ export class DespensaComponent implements OnInit {
       w.SpeechRecognition || w.webkitSpeechRecognition;
 
     if (!SpeechRecognition) {
+      console.warn('SpeechRecognition NO soportado en este navegador');
       this.voiceSupported = false;
       return;
     }
 
+    console.log('SpeechRecognition soportado, inicializando...');
     this.voiceSupported = true;
     this.recognition = new SpeechRecognition();
     this.recognition.lang = 'es-ES';
@@ -535,9 +539,11 @@ export class DespensaComponent implements OnInit {
       this.liveTranscript = '';
       this.searchText = '';
       this.recognizedText = '';
+      console.log('Reconocimiento de voz: START');
     };
 
     this.recognition.onend = () => {
+      console.log('Reconocimiento de voz: END');
       this.listening = false;
       // Cuando deja de escuchar, usamos el texto final reconocido
       this.voiceSearchFromText();
@@ -582,6 +588,7 @@ export class DespensaComponent implements OnInit {
 
   onVoiceSearchToggle(): void {
     if (!this.voiceSupported || !this.recognition) {
+      console.warn('Búsqueda por voz no disponible.');
       return;
     }
 
@@ -595,7 +602,12 @@ export class DespensaComponent implements OnInit {
       this.searchText = '';
       this.recognizedText = '';
       this.listening = true; // el botón pasa a "Parar" al momento
-      this.recognition.start();
+      try {
+        this.recognition.start();
+      } catch (e) {
+        console.error('No se pudo iniciar SpeechRecognition', e);
+        this.listening = false;
+      }
     }
   }
 

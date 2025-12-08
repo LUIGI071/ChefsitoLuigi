@@ -224,6 +224,15 @@
           </button>
         </div>
 
+        <!-- Aviso cuando la voz no está disponible -->
+        <p
+          class="voice-warning"
+          *ngIf="!voiceSupported"
+        >
+          La búsqueda por voz solo funciona en navegadores compatibles (Chrome/Edge)
+          con acceso al micrófono.
+        </p>
+
         <!-- TEXTO EN VIVO DE LA VOZ -->
         <div
           class="voice-live"
