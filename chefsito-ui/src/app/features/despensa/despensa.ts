@@ -64,6 +64,10 @@ export class DespensaComponent implements OnInit {
   allergySearchText = '';
   allergySearchResults: Ingredient[] = [];
 
+  // Intolerancias
+  intoleranceSearchText = '';
+  intoleranceSearchResults: Ingredient[] = [];
+
   // Ingredientes que no le gustan
   dislikedInput = '';
 
@@ -808,6 +812,119 @@ export class DespensaComponent implements OnInit {
         itemNameNorm.includes(allergyNorm) ||
         allergyNorm.includes(itemNameNorm)
       );
+    });
+  }
+
+  // ---- Intolerancias ----
+
+  buscarIntolerancia(): void {
+    const term = this.intoleranceSearchText.trim();
+    if (!term) {
+      this.intoleranceSearchResults = [];
+      return;
+    }
+
+    const normalizedTerm = this.normalizeText(term);
+
+    this.ingredientService.search(term, 10, 'es').subscribe({
+      next: (results: Ingredient[]) => {
+        if (results && results.length > 0) {
+          this.intoleranceSearchResults = results;
+          return;
+        }
+
+        // Fallback típico (lactosa / gluten, etc.)
+        const fallback = [
+          { id: 9101, name: 'lactose', nameEs: 'lactosa' },
+          { id: 9102, name: 'milk', nameEs: 'leche' },
+          { id: 9103, name: 'gluten', nameEs: 'gluten' },
+          { id: 9104, name: 'wheat', nameEs: 'trigo' },
+        ];
+
+        this.intoleranceSearchResults = fallback.filter((f) => {
+          const nameNorm = this.normalizeText(f.name);
+          const nameEsNorm = this.normalizeText(f.nameEs);
+          return (
+            nameNorm.includes(normalizedTerm) ||
+            nameEsNorm.includes(normalizedTerm) ||
+            normalizedTerm.includes(nameNorm) ||
+            normalizedTerm.includes(nameEsNorm)
+          );
+        });
+      },
+      error: (err: unknown) => {
+        console.error('Error buscando intolerancias', err);
+        this.intoleranceSearchResults = [
+          { id: 9101, name: 'lactose', nameEs: 'lactosa' },
+        ];
+      },
+    });
+  }
+
+  agregarIntolerancia(ing: Ingredient): void {
+    const userId = this.authService.getUserId();
+    if (!userId) return;
+
+    if (!this.userProfile) {
+      this.userProfile = {
+        userId,
+        allergies: [],
+        intolerances: [],
+        dislikedIngredients: [],
+        dietType: null,
+        cookingSkillLevel: null,
+      };
+    }
+
+    const nombre = this.getIngredientDisplayName(ing);
+    if (nombre && !this.userProfile.intolerances.includes(nombre)) {
+      this.userProfile.intolerances = [
+        ...this.userProfile.intolerances,
+        nombre,
+      ];
+    }
+
+    this.userProfileService.createOrUpdate(this.userProfile).subscribe({
+      next: (updated: UserProfile) => {
+        this.userProfile = {
+          userId: updated.userId,
+          allergies: updated.allergies || [],
+          intolerances: updated.intolerances || [],
+          dislikedIngredients: updated.dislikedIngredients || [],
+          dietType: updated.dietType || null,
+          cookingSkillLevel: updated.cookingSkillLevel || null,
+        };
+      },
+      error: (err: unknown) => {
+        console.error('Error guardando intolerancia', err);
+      },
+    });
+
+    this.intoleranceSearchText = '';
+    this.intoleranceSearchResults = [];
+  }
+
+  eliminarIntolerancia(value: string): void {
+    if (!this.userProfile) return;
+
+    this.userProfile.intolerances = this.userProfile.intolerances.filter(
+      (x) => x !== value
+    );
+
+    this.userProfileService.createOrUpdate(this.userProfile).subscribe({
+      next: (updated: UserProfile) => {
+        this.userProfile = {
+          userId: updated.userId,
+          allergies: updated.allergies || [],
+          intolerances: updated.intolerances || [],
+          dislikedIngredients: updated.dislikedIngredients || [],
+          dietType: updated.dietType || null,
+          cookingSkillLevel: updated.cookingSkillLevel || null,
+        };
+      },
+      error: (err: unknown) => {
+        console.error('Error eliminando intolerancia', err);
+      },
     });
   }
 

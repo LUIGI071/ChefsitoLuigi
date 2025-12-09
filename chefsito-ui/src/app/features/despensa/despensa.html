@@ -103,6 +103,69 @@
         </ng-template>
       </div>
 
+      <!-- Intolerancias -->
+      <div class="sidebar-section">
+        <h3>Intolerancias</h3>
+        <p class="sidebar-helper">
+          Chefsito intentará evitar ingredientes que te sientan mal.
+        </p>
+
+        <div class="allergy-search">
+          <input
+            type="text"
+            [(ngModel)]="intoleranceSearchText"
+            (keyup.enter)="buscarIntolerancia()"
+            placeholder="Buscar intolerancia (lactosa, gluten, fructosa…)"
+          />
+          <button
+            type="button"
+            class="btn small"
+            (click)="buscarIntolerancia()"
+          >
+            Buscar
+          </button>
+        </div>
+
+        <div
+          class="allergy-results"
+          *ngIf="intoleranceSearchResults.length > 0"
+        >
+          <button
+            type="button"
+            class="chip ghost"
+            *ngFor="let ing of intoleranceSearchResults"
+            (click)="agregarIntolerancia(ing)"
+          >
+            {{ getIngredientDisplayName(ing) }}
+          </button>
+        </div>
+
+        <div
+          class="chips-row"
+          *ngIf="userProfile?.intolerances?.length; else noIntolerances"
+        >
+          <span
+            class="chip"
+            *ngFor="let i of userProfile?.intolerances"
+          >
+            {{ i }}
+            <button
+              type="button"
+              class="chip-remove"
+              (click)="eliminarIntolerancia(i)"
+            >
+              ×
+            </button>
+          </span>
+        </div>
+
+        <ng-template #noIntolerances>
+          <p class="empty-text">
+            Aún no has añadido intolerancias.
+          </p>
+        </ng-template>
+      </div>
+
       <!-- Ingredientes que no le gustan -->
       <div class="sidebar-section">
         <h3>Ingredientes que no me gustan</h3>

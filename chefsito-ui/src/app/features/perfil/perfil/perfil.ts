@@ -69,7 +69,8 @@ export class PerfilComponent implements OnInit {
 
     const userId = this.authService.getUserId();
     if (!userId) {
-      this.router.navigate(['/login']);
+      // 🔥 FIX: evitamos el warning “Promise returned from navigate is ignored”
+      void this.router.navigate(['/login']);
       return;
     }
 
@@ -89,7 +90,7 @@ export class PerfilComponent implements OnInit {
       },
       error: (err) => {
         if (err?.status === 404) {
-          // No existe perfil todavía: usamos el objeto por defecto
+          // Perfil no existe aún → mantenemos valores por defecto
           this.loading = false;
           return;
         }
@@ -145,7 +146,6 @@ export class PerfilComponent implements OnInit {
 
   onLanguageChange(): void {
     localStorage.setItem('preferredLanguage', this.preferredLanguage);
-    // Aquí en el futuro puedes integrar ngx-translate si quieres
   }
 
   save(): void {
