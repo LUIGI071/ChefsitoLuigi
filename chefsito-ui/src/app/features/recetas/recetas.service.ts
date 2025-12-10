@@ -4,7 +4,6 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
-// Debe coincidir con OpenAiRecipeResponse.java (los nuevos campos son opcionales)
 export interface RecipeRecommendation {
   openAiId: string;
   title: string;
@@ -15,23 +14,17 @@ export interface RecipeRecommendation {
   difficulty: string | null;
   category: string | null;
 
+  /**
+   * Lista de nombres de ingredientes generada por IA (texto plano),
+   * por ejemplo: ["2 tomates maduros", "200 g de pasta", ...]
+   */
+  ingredientNames?: string[] | null;
+
   // Opcional: para poder usar r.imageUrl en recetas.component.ts
   imageUrl?: string | null;
 }
 
-// Si algún día quieres llamar a /by-ingredients
-export interface RecipeRequest {
-  userId: number;
-  availableIngredients: string[];
-  preferences: {
-    allergies: string[];
-    intolerances: string[];
-    dislikedIngredients: string[];
-    dietType: string | null;
-    cookingSkillLevel: string | null;
-  } | null;
-  maxRecipes: number;
-}
+
 
 @Injectable({
   providedIn: 'root',
@@ -50,19 +43,6 @@ export class RecetasService {
   getForUser(userId: number): Observable<RecipeRecommendation[]> {
     return this.http.get<RecipeRecommendation[]>(
       `${this.API_URL}/for-user/${userId}`
-    );
-  }
-
-  /**
-   * POST /api/recommendations/by-ingredients
-   * (por si quieres usarlo más adelante)
-   */
-  getByIngredients(
-    request: RecipeRequest
-  ): Observable<RecipeRecommendation[]> {
-    return this.http.post<RecipeRecommendation[]>(
-      `${this.API_URL}/by-ingredients`,
-      request
     );
   }
 }

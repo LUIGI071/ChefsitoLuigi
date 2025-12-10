@@ -68,7 +68,7 @@
     </p>
   </div>
 
-  <!-- FILTROS (solo si hay alguna visible) -->
+  <!-- FILTROS + NAV LOCAL (solo si hay alguna visible) -->
   <div
     *ngIf="
       !loading &&
@@ -77,67 +77,87 @@
     "
     class="recipes-filters"
   >
-    <div class="filter-group">
-      <span class="filter-group-label">Ordenar por:</span>
-      <button
-        type="button"
-        class="filter-chip"
-        [class.active]="sortMode === 'none'"
-        (click)="onChangeSort('none')"
-      >
-        Relevancia
-      </button>
-      <button
-        type="button"
-        class="filter-chip"
-        [class.active]="sortMode === 'timeAsc'"
-        (click)="onChangeSort('timeAsc')"
-      >
-        Tiempo ↑
-      </button>
-      <button
-        type="button"
-        class="filter-chip"
-        [class.active]="sortMode === 'timeDesc'"
-        (click)="onChangeSort('timeDesc')"
-      >
-        Tiempo ↓
-      </button>
+    <div class="filters-main">
+      <div class="filter-group">
+        <span class="filter-group-label">Ordenar por:</span>
+        <button
+          type="button"
+          class="filter-chip"
+          [class.active]="sortMode === 'none'"
+          (click)="onChangeSort('none')"
+        >
+          Relevancia
+        </button>
+        <button
+          type="button"
+          class="filter-chip"
+          [class.active]="sortMode === 'timeAsc'"
+          (click)="onChangeSort('timeAsc')"
+        >
+          Tiempo ↑
+        </button>
+        <button
+          type="button"
+          class="filter-chip"
+          [class.active]="sortMode === 'timeDesc'"
+          (click)="onChangeSort('timeDesc')"
+        >
+          Tiempo ↓
+        </button>
+      </div>
+
+      <div class="filter-group">
+        <span class="filter-group-label">Dificultad:</span>
+        <button
+          type="button"
+          class="filter-chip"
+          [class.active]="difficultyFilter === 'ALL'"
+          (click)="onChangeDifficulty('ALL')"
+        >
+          Todas
+        </button>
+        <button
+          type="button"
+          class="filter-chip"
+          [class.active]="difficultyFilter === 'EASY'"
+          (click)="onChangeDifficulty('EASY')"
+        >
+          Fácil
+        </button>
+        <button
+          type="button"
+          class="filter-chip"
+          [class.active]="difficultyFilter === 'MEDIUM'"
+          (click)="onChangeDifficulty('MEDIUM')"
+        >
+          Media
+        </button>
+        <button
+          type="button"
+          class="filter-chip"
+          [class.active]="difficultyFilter === 'HARD'"
+          (click)="onChangeDifficulty('HARD')"
+        >
+          Difícil
+        </button>
+      </div>
     </div>
 
-    <div class="filter-group">
-      <span class="filter-group-label">Dificultad:</span>
+    <!-- Navegación local para que siempre se vea cuando juegan con los filtros -->
+    <div class="filters-nav">
       <button
         type="button"
-        class="filter-chip"
-        [class.active]="difficultyFilter === 'ALL'"
-        (click)="onChangeDifficulty('ALL')"
+        class="btn ghost small"
+        routerLink="/despensa"
       >
-        Todas
+        🧺 Ir a mi despensa
       </button>
       <button
         type="button"
-        class="filter-chip"
-        [class.active]="difficultyFilter === 'EASY'"
-        (click)="onChangeDifficulty('EASY')"
+        class="btn ghost small"
+        (click)="cargarRecetas()"
       >
-        Fácil
-      </button>
-      <button
-        type="button"
-        class="filter-chip"
-        [class.active]="difficultyFilter === 'MEDIUM'"
-        (click)="onChangeDifficulty('MEDIUM')"
-      >
-        Media
-      </button>
-      <button
-        type="button"
-        class="filter-chip"
-        [class.active]="difficultyFilter === 'HARD'"
-        (click)="onChangeDifficulty('HARD')"
-      >
-        Difícil
+        🔄 Recalcular recetas
       </button>
     </div>
   </div>
@@ -271,11 +291,26 @@
       <div class="ingredients-row">
         <div class="ingredients-block">
           <h3>Ingredientes</h3>
-          <ul>
-            <li *ngFor="let ing of selectedRecipe?.ingredients">
-              {{ ing }}
-            </li>
-          </ul>
+
+          <!-- Preferimos la lista de nombres generada por IA si existe -->
+          <ng-container
+            *ngIf="selectedRecipe?.ingredientNames?.length; else fallbackIngredients"
+          >
+            <ul>
+              <li *ngFor="let ing of selectedRecipe?.ingredientNames">
+                {{ ing }}
+              </li>
+            </ul>
+          </ng-container>
+
+          <!-- Si el backend no envía ingredientNames, usamos la lista clásica -->
+          <ng-template #fallbackIngredients>
+            <ul>
+              <li *ngFor="let ing of selectedRecipe?.ingredients">
+                {{ ing }}
+              </li>
+            </ul>
+          </ng-template>
         </div>
 
         <div class="ingredients-block">

@@ -74,11 +74,9 @@ export class RecetasComponent implements OnInit {
           userId: profile.userId,
           allergies: profile.allergies || [],
           intolerances: profile.intolerances || [],
-          dislikedIngredients:
-            profile.dislikedIngredients || [],
+          dislikedIngredients: profile.dislikedIngredients || [],
           dietType: profile.dietType || null,
-          cookingSkillLevel:
-            profile.cookingSkillLevel || null,
+          cookingSkillLevel: profile.cookingSkillLevel || null,
         };
       },
       error: (err: any) => {
@@ -121,6 +119,24 @@ export class RecetasComponent implements OnInit {
       .toLowerCase()
       .normalize('NFD')
       .replace(/[\u0300-\u036f]/g, '');
+  }
+
+  /**
+   * Combina ingredientes clásicos + ingredientNames (texto de IA)
+   * en un solo string, para filtrar por dieta, gustos y alergias.
+   */
+  private getCombinedIngredientsText(r: RecipeRecommendation): string {
+    const list: string[] = [];
+
+    if (Array.isArray(r.ingredients)) {
+      list.push(...r.ingredients);
+    }
+
+    if (Array.isArray(r.ingredientNames)) {
+      list.push(...r.ingredientNames);
+    }
+
+    return list.join(' ');
   }
 
   getShortDescription(r: RecipeRecommendation): string {
@@ -173,8 +189,10 @@ export class RecetasComponent implements OnInit {
     if (!this.userProfile?.dietType) return true;
 
     const diet = this.normalizeText(this.userProfile.dietType);
+    const ingredientsText = this.getCombinedIngredientsText(r);
+
     const text = this.normalizeText(
-      `${r.title} ${r.description} ${r.ingredients.join(' ')}`
+      `${r.title} ${r.description} ${ingredientsText}`
     );
 
     // Vegana
@@ -249,8 +267,10 @@ export class RecetasComponent implements OnInit {
       return true;
     }
 
+    const ingredientsText = this.getCombinedIngredientsText(r);
+
     const text = this.normalizeText(
-      `${r.title} ${r.description} ${r.ingredients.join(' ')}`
+      `${r.title} ${r.description} ${ingredientsText}`
     );
 
     return !this.userProfile.dislikedIngredients.some(
@@ -314,13 +334,13 @@ export class RecetasComponent implements OnInit {
     if (
       !this.userProfile ||
       !this.userProfile.allergies?.length ||
-      !r.ingredients?.length
+      (!r.ingredients?.length && !r.ingredientNames?.length)
     ) {
       return [];
     }
 
     const ingredientsText = this.normalizeText(
-      r.ingredients.join(' ')
+      this.getCombinedIngredientsText(r)
     );
 
     return this.userProfile.allergies.filter(
@@ -331,16 +351,6 @@ export class RecetasComponent implements OnInit {
     );
   }
 
-  // =====================================
-  //   IMAGEN OPCIONAL (sin aleatorias)
-  // =====================================
-
-  getImageForRecipe(
-    r: RecipeRecommendation
-  ): string | null {
-    // Solo usamos imagen si el backend la envía (no generamos aleatorias)
-    return r.imageUrl ?? null;
-  }
 
   // =====================================
   //   MODAL DETALLE & COCINAR AHORA

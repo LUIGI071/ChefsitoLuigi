@@ -199,15 +199,24 @@
   gap: 1rem;
 }
 
+/* 🔁 HEADER actualizado para dejar sitio al botón de recetas */
 .pantry-header {
   display: flex;
-  justify-content: center;
+  justify-content: space-between; /* antes: center */
+  align-items: center;
 }
 
 .title-block {
   display: flex;
   align-items: center;
   gap: 0.75rem;
+}
+
+/* Nuevo: bloque de acciones en la cabecera (botón "Ver recetas sugeridas") */
+.pantry-header-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
 }
 
 .hamburger-btn {
@@ -819,6 +828,18 @@
 
   .titles {
     text-align: left;
+  }
+
+  /* Nuevo: header en columna en móvil para que título y botón quepan bien */
+  .pantry-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .pantry-header-actions {
+    width: 100%;
+    justify-content: flex-start;
   }
 }
 
