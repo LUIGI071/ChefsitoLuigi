@@ -65,7 +65,7 @@ public class RecipeController {
         return ResponseEntity.ok(recipe);
     }
 
-    // Operaciones con DTO (si las necesitas para otras funcionalidades)
+    // Operaciones con DTO
     @Operation(summary = "Obtener todas las recetas como DTO")
     @GetMapping("/dto")
     public ResponseEntity<List<RecipeDto>> getAllRecipesAsDto() {

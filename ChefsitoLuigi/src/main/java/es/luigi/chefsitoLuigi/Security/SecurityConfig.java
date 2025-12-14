@@ -79,7 +79,7 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
 
-        // 🔴 Orígenes permitidos: local + Render frontend
+        // Orígenes permitidos: local + Render frontend
         config.setAllowedOrigins(List.of(
                 "http://localhost:4200",
                 "https://chefsito-ui.onrender.com"

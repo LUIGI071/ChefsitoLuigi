@@ -1,4 +1,4 @@
-// src/app/features/recetas/recetas.component.ts
+
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
@@ -8,7 +8,7 @@ import {
   RecipeRecommendation,
 } from './recetas.service';
 
-// ✅ rutas corregidas
+//  rutas corregidas
 import { AuthService } from '../../core/auth/auth.service';
 import {
   UserProfile,
@@ -122,8 +122,7 @@ export class RecetasComponent implements OnInit {
   }
 
   /**
-   * Combina ingredientes clásicos + ingredientNames (texto de IA)
-   * en un solo string, para filtrar por dieta, gustos y alergias.
+   *  filtra por dieta, gustos y alergias.
    */
   private getCombinedIngredientsText(r: RecipeRecommendation): string {
     const list: string[] = [];
@@ -181,9 +180,6 @@ export class RecetasComponent implements OnInit {
     return difficulty || 'Sin dato';
   }
 
-  // =====================================
-  //   FILTROS (DIETA / GUSTOS / DIFICULTAD)
-  // =====================================
 
   private recipeMatchesDiet(r: RecipeRecommendation): boolean {
     if (!this.userProfile?.dietType) return true;
@@ -311,7 +307,7 @@ export class RecetasComponent implements OnInit {
     return list;
   }
 
-  // 👇 Getter para usar en el HTML y poder saber si hay recetas visibles
+  //  Getter para usar en el HTML y poder saber si hay recetas visibles
   get visibleRecipes(): RecipeRecommendation[] {
     return this.getFilteredAndSortedRecipes();
   }
@@ -352,9 +348,6 @@ export class RecetasComponent implements OnInit {
   }
 
 
-  // =====================================
-  //   MODAL DETALLE & COCINAR AHORA
-  // =====================================
 
   verDetalles(receta: RecipeRecommendation): void {
     this.selectedRecipe = receta;

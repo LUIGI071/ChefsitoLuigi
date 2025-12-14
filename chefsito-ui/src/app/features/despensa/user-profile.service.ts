@@ -1,4 +1,3 @@
-// src/app/features/despensa/user-profile.service.ts
 
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
@@ -13,7 +12,6 @@ export interface UserProfile {
   intolerances: string[];
   dislikedIngredients: string[];
   dietType: string | null;
-  // En la entidad del backend existe este campo, lo dejamos opcional:
   cookingSkillLevel?: string | null;
 }
 
@@ -25,7 +23,6 @@ export class UserProfileService {
   private readonly API_URL = `${environment.apiBaseUrl}/user-profile`;
 
   /**
-   * GET /api/user-profile/user/{userId}
    * Obtiene el perfil culinario por id de usuario.
    */
   getByUserId(userId: number): Observable<UserProfile> {
@@ -33,7 +30,6 @@ export class UserProfileService {
   }
 
   /**
-   * POST /api/user-profile
    * Crea o actualiza el perfil culinario.
    */
   createOrUpdate(profile: UserProfile): Observable<UserProfile> {

@@ -1,5 +1,3 @@
-<!-- src/app/features/recetas/recetas.html -->
-
 <section class="recipes-page">
   <header class="recipes-hero">
     <div class="hero-text">
@@ -8,78 +6,48 @@
     </div>
 
     <div class="hero-actions">
-      <button
-        class="btn ghost"
-        routerLink="/despensa"
-      >
-        🧺 Ver despensa
+      <button class="btn ghost" routerLink="/despensa">
+        Ver despensa
       </button>
-      <button
-        class="btn ghost"
-        (click)="cargarRecetas()"
-      >
-        🔄 Actualizar sugerencias
+      <button class="btn ghost" (click)="cargarRecetas()">
+        Actualizar sugerencias
       </button>
     </div>
   </header>
 
-  <!-- ESTADO: CARGANDO -->
   <div *ngIf="loading" class="status info cooking">
     <div class="spinner"></div>
     <div>
       <p class="title">Chefsito está cocinando para ti.</p>
-      <p class="subtitle">
-        Analizando tu despensa, tu dieta y tus gustos.
-      </p>
+      <p class="subtitle">Analizando tu despensa, tu dieta y tus gustos.</p>
     </div>
   </div>
 
-  <!-- ESTADO: ERROR -->
   <div *ngIf="error" class="status error">
     {{ error }}
   </div>
 
-  <!-- ESTADO: el backend no devolvió recetas -->
-  <div
-    *ngIf="!loading && !error && recetas.length === 0"
-    class="status empty"
-  >
+  <div *ngIf="!loading && !error && recetas.length === 0" class="status empty">
     <p>De momento no hay recetas sugeridas.</p>
-    <p>
-      Asegúrate de tener ingredientes en tu despensa y vuelve a
-      intentarlo.
-    </p>
+    <p>Asegúrate de tener ingredientes en tu despensa y vuelve a intentarlo.</p>
   </div>
 
-  <!-- ESTADO: hay recetas, pero los filtros dejan la lista vacía -->
   <div
-    *ngIf="
-      !loading &&
-      !error &&
-      recetas.length > 0 &&
-      visibleRecipes.length === 0
-    "
+    *ngIf="!loading && !error && recetas.length > 0 && visibleRecipes.length === 0"
     class="status empty"
   >
     <p>No hemos encontrado recetas que encajen con tus filtros.</p>
-    <p>
-      Prueba a cambiar tu tipo de dieta, ingredientes que no te
-      gustan o la dificultad.
-    </p>
+    <p>Prueba a cambiar tu tipo de dieta, ingredientes que no te gustan o la dificultad.</p>
   </div>
 
-  <!-- FILTROS + NAV LOCAL (solo si hay alguna visible) -->
   <div
-    *ngIf="
-      !loading &&
-      !error &&
-      visibleRecipes.length > 0
-    "
+    *ngIf="!loading && !error && visibleRecipes.length > 0"
     class="recipes-filters"
   >
     <div class="filters-main">
       <div class="filter-group">
         <span class="filter-group-label">Ordenar por:</span>
+
         <button
           type="button"
           class="filter-chip"
@@ -88,6 +56,7 @@
         >
           Relevancia
         </button>
+
         <button
           type="button"
           class="filter-chip"
@@ -96,6 +65,7 @@
         >
           Tiempo ↑
         </button>
+
         <button
           type="button"
           class="filter-chip"
@@ -108,6 +78,7 @@
 
       <div class="filter-group">
         <span class="filter-group-label">Dificultad:</span>
+
         <button
           type="button"
           class="filter-chip"
@@ -116,6 +87,7 @@
         >
           Todas
         </button>
+
         <button
           type="button"
           class="filter-chip"
@@ -124,6 +96,7 @@
         >
           Fácil
         </button>
+
         <button
           type="button"
           class="filter-chip"
@@ -132,6 +105,7 @@
         >
           Media
         </button>
+
         <button
           type="button"
           class="filter-chip"
@@ -145,72 +119,41 @@
 
     <!-- Navegación local para que siempre se vea cuando juegan con los filtros -->
     <div class="filters-nav">
-      <button
-        type="button"
-        class="btn ghost small"
-        routerLink="/despensa"
-      >
+      <button type="button" class="btn ghost small" routerLink="/despensa">
         🧺 Ir a mi despensa
       </button>
-      <button
-        type="button"
-        class="btn ghost small"
-        (click)="cargarRecetas()"
-      >
+      <button type="button" class="btn ghost small" (click)="cargarRecetas()">
         🔄 Recalcular recetas
       </button>
     </div>
   </div>
 
   <!-- LISTA DE RECETAS -->
-  <section
-    *ngIf="
-      !loading &&
-      !error &&
-      visibleRecipes.length > 0
-    "
-    class="recipes-grid"
-  >
-    <article
-      *ngFor="let r of visibleRecipes"
-      class="recipe-card"
-    >
+  <section *ngIf="!loading && !error && visibleRecipes.length > 0" class="recipes-grid">
+    <article *ngFor="let r of visibleRecipes" class="recipe-card">
       <div class="recipe-content">
         <header class="recipe-header">
           <h2>{{ r.title }}</h2>
 
           <div class="recipe-tags">
-            <span
-              *ngIf="r.difficulty"
-              class="tag"
-            >
+            <span *ngIf="r.difficulty" class="tag">
               {{ formatDifficulty(r.difficulty) }}
             </span>
-            <span
-              *ngIf="r.preparationTime !== null"
-              class="tag"
-            >
+
+            <span *ngIf="r.preparationTime !== null" class="tag">
               ⏱ {{ r.preparationTime }} min
             </span>
-            <span
-              *ngIf="r.category"
-              class="tag"
-            >
+
+            <span *ngIf="r.category" class="tag">
               {{ r.category }}
             </span>
           </div>
         </header>
 
-        <div
-          class="allergy-warning"
-          *ngIf="getAllergensForRecipe(r).length > 0"
-        >
+        <div class="allergy-warning" *ngIf="getAllergensForRecipe(r).length > 0">
           <p>⚠ Esta receta contiene alérgenos que has marcado:</p>
           <div class="allergy-chips">
-            <span
-              class="chip"
-              *ngFor="let a of getAllergensForRecipe(r)"
-            >
+            <span class="chip" *ngFor="let a of getAllergensForRecipe(r)">
               {{ a }}
             </span>
           </div>
@@ -221,18 +164,8 @@
         </p>
 
         <div class="recipe-actions">
-          <button
-            type="button"
-            class="btn ghost"
-            (click)="verDetalles(r)"
-          >
-            Ver detalles
-          </button>
-          <button
-            type="button"
-            class="btn primary"
-            (click)="cocinarAhora(r)"
-          >
+          <!-- Quitado "Ver detalles" porque hacía lo mismo -->
+          <button type="button" class="btn primary" (click)="cocinarAhora(r)">
             🍳 Cocinar ahora
           </button>
         </div>
@@ -240,25 +173,16 @@
     </article>
   </section>
 
-  <!-- BACKDROP MODAL DETALLE -->
   <div
     class="recipe-modal-backdrop"
     *ngIf="selectedRecipe"
     (click)="cerrarDetalles()"
   ></div>
 
-  <!-- MODAL DETALLE -->
-  <section
-    class="recipe-modal"
-    *ngIf="selectedRecipe"
-  >
+  <section class="recipe-modal" *ngIf="selectedRecipe">
     <header class="recipe-modal-header">
       <h2>{{ selectedRecipe?.title }}</h2>
-      <button
-        type="button"
-        class="close-btn"
-        (click)="cerrarDetalles()"
-      >
+      <button type="button" class="close-btn" (click)="cerrarDetalles()">
         ✕
       </button>
     </header>
@@ -270,19 +194,11 @@
 
       <div
         class="allergy-warning"
-        *ngIf="
-          selectedRecipe &&
-          getAllergensForRecipe(selectedRecipe).length > 0
-        "
+        *ngIf="selectedRecipe && getAllergensForRecipe(selectedRecipe).length > 0"
       >
         <p>⚠ Esta receta contiene alérgenos que has marcado:</p>
         <div class="allergy-chips">
-          <span
-            class="chip"
-            *ngFor="
-              let a of getAllergensForRecipe(selectedRecipe!)
-            "
-          >
+          <span class="chip" *ngFor="let a of getAllergensForRecipe(selectedRecipe!)">
             {{ a }}
           </span>
         </div>
@@ -293,9 +209,7 @@
           <h3>Ingredientes</h3>
 
           <!-- Preferimos la lista de nombres generada por IA si existe -->
-          <ng-container
-            *ngIf="selectedRecipe?.ingredientNames?.length; else fallbackIngredients"
-          >
+          <ng-container *ngIf="selectedRecipe?.ingredientNames?.length; else fallbackIngredients">
             <ul>
               <li *ngFor="let ing of selectedRecipe?.ingredientNames">
                 {{ ing }}
@@ -303,7 +217,6 @@
             </ul>
           </ng-container>
 
-          <!-- Si el backend no envía ingredientNames, usamos la lista clásica -->
           <ng-template #fallbackIngredients>
             <ul>
               <li *ngFor="let ing of selectedRecipe?.ingredients">

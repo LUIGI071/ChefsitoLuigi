@@ -1,16 +1,15 @@
-// src/app/features/admin.ts
 
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AdminService, AdminUser } from './admin.service';
-import { AuthService } from '../core/auth/auth.service'; // ← ruta corregida
+import { AuthService } from '../core/auth/auth.service';
 
 @Component({
   selector: 'app-admin',
   standalone: true,
   imports: [CommonModule],
   templateUrl: './admin.html',
-  styleUrls: ['./admin.scss'], // ← propiedad correcta (plural)
+  styleUrls: ['./admin.scss'],
 })
 export class Admin implements OnInit {
   private adminService = inject(AdminService);
@@ -62,7 +61,6 @@ export class Admin implements OnInit {
     return myId !== null && user.id === myId;
   }
 
-  // Eliminar usuario (única acción del panel)
   deleteUser(user: AdminUser): void {
     if (this.isSelf(user)) {
       alert('No puedes borrarte a ti mismo 😂');

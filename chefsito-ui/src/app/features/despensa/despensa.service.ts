@@ -1,4 +1,3 @@
-// src/app/features/despensa/despensa.service.ts
 import { inject, Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
@@ -10,14 +9,13 @@ export interface PantryItem {
   id: number;
   ingredientId: number;
 
-  // nombres que se usan en el componente (líneas 220, 722, 723)
+
   ingredientName?: string;
   ingredientNameEs?: string;
 
   quantity: number;
   unit: string | null;
 
-  // 🔹 Campo requerido por el HTML (evita error en Render si no hay imagen)
   ingredientImageUrl?: string | null;
 }
 

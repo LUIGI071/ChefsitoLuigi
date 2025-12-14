@@ -1,7 +1,7 @@
 <section class="auth-page">
   <div class="auth-shell">
 
-    <!-- Hero -->
+
     <div class="auth-hero">
       <div class="logo-circle">🥕</div>
       <h1>Crear cuenta</h1>
@@ -18,21 +18,21 @@
       </ul>
     </div>
 
-    <!-- Tarjeta -->
+
     <div class="auth-card">
       <h2 class="card-title">Regístrate</h2>
       <p class="card-subtitle">
         Solo necesitas unos datos básicos y tu perfil culinario.
       </p>
 
-      <!-- Error general -->
+
       <div *ngIf="errorMessage" class="alert error">
         {{ errorMessage }}
       </div>
 
       <form class="auth-form" [formGroup]="form" (ngSubmit)="submit()">
 
-        <!-- Nombre completo -->
+
         <div class="field">
           <label for="fullName">Nombre completo</label>
           <input
@@ -57,7 +57,7 @@
           </div>
         </div>
 
-        <!-- Email -->
+
         <div class="field">
           <label for="email">Correo electrónico</label>
           <input
@@ -83,7 +83,7 @@
           </div>
         </div>
 
-        <!-- Password + Confirm -->
+
         <div class="field field-inline">
 
           <!-- Password -->
@@ -113,7 +113,7 @@
             </div>
           </div>
 
-          <!-- Confirm Password -->
+
           <div>
             <label for="confirmPassword">Repetir contraseña</label>
             <input
@@ -199,7 +199,7 @@
           ></textarea>
         </div>
 
-        <!-- Submit -->
+
         <button
           class="btn primary"
           type="submit"

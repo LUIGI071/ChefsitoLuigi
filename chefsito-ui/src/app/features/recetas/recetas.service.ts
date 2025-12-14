@@ -1,4 +1,3 @@
-// src/app/features/recetas/recetas.service.ts
 import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
@@ -15,8 +14,7 @@ export interface RecipeRecommendation {
   category: string | null;
 
   /**
-   * Lista de nombres de ingredientes generada por IA (texto plano),
-   * por ejemplo: ["2 tomates maduros", "200 g de pasta", ...]
+   * Lista de nombres de ingredientes generada por IA
    */
   ingredientNames?: string[] | null;
 
@@ -37,7 +35,6 @@ export class RecetasService {
   private readonly API_URL = `${environment.apiBaseUrl}/recommendations`;
 
   /**
-   * GET /api/recommendations/for-user/{userId}
    * Usa la despensa del usuario para generar recetas con OpenAI.
    */
   getForUser(userId: number): Observable<RecipeRecommendation[]> {

@@ -1,20 +1,12 @@
-// src/app/app.routes.ts
 import { Routes } from '@angular/router';
 import { LoginComponent } from './features/auth/login/login';
-import { authGuard } from './core/auth/auth.guard';
+import { authGuard } from './core/auth/auth.guard'
 
 export const routes: Routes = [
-  // ============================
-  // LOGIN (sin layout)
-  // ============================
   {
     path: 'login',
     component: LoginComponent,
   },
-
-  // ============================
-  // REGISTRO (sin layout)
-  // ============================
   {
     path: 'register',
     loadComponent: () =>

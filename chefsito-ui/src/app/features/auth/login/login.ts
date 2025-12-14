@@ -1,4 +1,3 @@
-// src/app/features/auth/login/login.ts
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
@@ -20,7 +19,7 @@ import { AuthService } from '../../../core/auth/auth.service';
   styleUrls: ['./login.scss'],
 })
 export class LoginComponent {
-  // Formulario tipado
+
   form!: FormGroup<{
     email: FormControl<string | null>;
     password: FormControl<string | null>;
@@ -36,7 +35,6 @@ export class LoginComponent {
     private router: Router,
     private fb: FormBuilder
   ) {
-    // 📌 Validación cambiada a minlength(1)
     this.form = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       password: [
@@ -51,9 +49,6 @@ export class LoginComponent {
     }>;
   }
 
-  // ============================
-  // Getters usados en el HTML
-  // ============================
   get email() {
     return this.form.get('email');
   }
@@ -66,9 +61,6 @@ export class LoginComponent {
     this.passwordVisible = !this.passwordVisible;
   }
 
-  // ============================
-  // Submit del formulario
-  // ============================
   submit(): void {
     if (this.form.invalid) {
       this.form.markAllAsTouched();

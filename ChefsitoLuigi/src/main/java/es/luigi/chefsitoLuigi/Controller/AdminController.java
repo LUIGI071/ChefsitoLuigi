@@ -24,17 +24,17 @@ public class AdminController {
 
     @GetMapping("/users")
     public List<UserDto> getAllUsers() {
-        logger.info("📊 Admin solicitando lista de usuarios");
+        logger.info(" Admin solicitando lista de usuarios");
         List<UserDto> users = userService.getAllUsers();
-        logger.info("✅ Lista de usuarios obtenida: {} usuarios", users.size());
+        logger.info(" Lista de usuarios obtenida: {} usuarios", users.size());
         return users;
     }
 
     @DeleteMapping("/users/{userId}")
     public ResponseEntity<Void> deleteUser(@PathVariable Long userId) {
-        logger.info("🗑️ Admin eliminando usuario ID: {}", userId);
+        logger.info("🗑 Admin eliminando usuario ID: {}", userId);
         userService.deleteUser(userId);
-        logger.info("✅ Usuario {} eliminado exitosamente", userId);
+        logger.info(" Usuario {} eliminado exitosamente", userId);
         return ResponseEntity.noContent().build();
     }
 
@@ -42,19 +42,19 @@ public class AdminController {
     public ResponseEntity<UserDto> updateUserRoles(
             @PathVariable Long userId,
             @RequestBody Map<String, List<String>> request) {
-        logger.info("👑 Admin actualizando roles para usuario ID: {}", userId);
+        logger.info(" Admin actualizando roles para usuario ID: {}", userId);
         List<String> roles = request.get("roles");
         logger.debug("Nuevos roles a asignar: {}", roles);
         UserDto updatedUser = userService.updateUserRoles(userId, roles);
-        logger.info("✅ Roles actualizados para usuario {}: {}", userId, updatedUser.getRoles());
+        logger.info(" Roles actualizados para usuario {}: {}", userId, updatedUser.getRoles());
         return ResponseEntity.ok(updatedUser);
     }
 
     @GetMapping("/stats")
     public ResponseEntity<Map<String, Long>> getStats() {
-        logger.info("📈 Admin solicitando estadísticas");
+        logger.info(" Admin solicitando estadísticas");
         long userCount = userService.getAllUsers().size();
-        logger.info("📊 Estadísticas calculadas: {} usuarios totales", userCount);
+        logger.info("Estadísticas calculadas: {} usuarios totales", userCount);
         return ResponseEntity.ok(Map.of("totalUsers", userCount));
     }
 }

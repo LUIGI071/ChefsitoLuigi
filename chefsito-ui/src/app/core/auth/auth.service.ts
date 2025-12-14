@@ -1,4 +1,3 @@
-// src/app/core/auth/auth.service.ts
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
@@ -48,8 +47,6 @@ export class AuthService {
 
   /**
    * Registro de nuevo usuario.
-   * Coincide con lo que espera tu test (email, password, fullName)
-   * y guarda la sesión igual que login.
    */
   register(
     email: string,
@@ -71,7 +68,6 @@ export class AuthService {
 
   /**
    * Guardar la sesión en sessionStorage.
-   * (token + info básica del usuario)
    */
   private storeSession(res: LoginResponse): void {
     sessionStorage.setItem('token', res.token);

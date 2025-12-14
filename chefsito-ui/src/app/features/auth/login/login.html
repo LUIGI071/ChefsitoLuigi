@@ -1,8 +1,6 @@
-<!-- src/app/features/auth/login/login.html -->
 
 <section class="auth-page">
   <div class="auth-shell">
-    <!-- Columna izquierda: branding / texto -->
     <div class="auth-hero">
       <div class="logo-circle">🍳</div>
       <h1>Chefsito Luigi</h1>
@@ -17,25 +15,25 @@
       </ul>
     </div>
 
-    <!-- Columna derecha: tarjeta de login -->
+
     <div class="auth-card">
       <h2 class="card-title">Inicia sesión</h2>
       <p class="card-subtitle">
         Entra con tu cuenta para que Chefsito cocine contigo 😋
       </p>
 
-      <!-- Mensaje de error -->
+      >
       <div *ngIf="errorMessage" class="alert error">
         {{ errorMessage }}
       </div>
 
-      <!-- Formulario -->
+
       <form
         class="auth-form"
         [formGroup]="form"
         (ngSubmit)="submit()"
       >
-        <!-- Email -->
+
         <div class="field">
           <label for="email">Correo electrónico</label>
           <input
@@ -59,7 +57,7 @@
           </div>
         </div>
 
-        <!-- Password -->
+
         <div class="field">
           <label for="password">Contraseña</label>
 
@@ -93,7 +91,7 @@
           </div>
         </div>
 
-        <!-- Remember me -->
+
         <div class="form-row form-row--between">
           <label class="remember">
             <input
@@ -104,7 +102,7 @@
           </label>
         </div>
 
-        <!-- Botón principal -->
+
         <button
           class="btn primary"
           type="submit"
@@ -118,7 +116,7 @@
         </button>
       </form>
 
-      <!-- Footer -->
+
       <div class="auth-footer">
         <p>¿Todavía no tienes cuenta?</p>
         <a routerLink="/register">Crear una cuenta nueva</a>

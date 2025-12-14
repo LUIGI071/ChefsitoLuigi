@@ -1,4 +1,3 @@
-// src/app/features/despensa/despensa.ts
 import { Component, OnInit } from '@angular/core';
 import { CommonModule, NgClass } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -88,7 +87,7 @@ export class DespensaComponent implements OnInit {
   ];
   filteredDislikedSuggestions: string[] = [];
 
-  // 👉 Diccionario provisional de traducciones EN → ES solo en el front
+  //Diccionario provisional de traducciones EN → ES solo en el front
   private ingredientTranslations: Record<string, string> = {
     // pollo y derivados
     chicken: 'Pollo',
@@ -139,7 +138,7 @@ export class DespensaComponent implements OnInit {
   }
 
   // ============================
-  //   HELPERS NOMBRES (TRADUCCIÓN FRONT)
+  //  (TRADUCCIÓN FRONT)
   // ============================
 
   /**
@@ -201,7 +200,7 @@ export class DespensaComponent implements OnInit {
     });
   }
 
-  // AÑADIR (mock de ejemplo, por si lo quieres usar)
+  // AÑADIR (mock de ejemplo,)
   onAddMock(): void {
     const nuevo: PantryItemCreateRequest = {
       ingredientId: 1,
@@ -605,7 +604,7 @@ export class DespensaComponent implements OnInit {
       this.liveTranscript = '';
       this.searchText = '';
       this.recognizedText = '';
-      this.listening = true; // el botón pasa a "Parar" al momento
+      this.listening = true;
       try {
         this.recognition.start();
       } catch (e) {
