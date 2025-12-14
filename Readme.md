@@ -131,7 +131,7 @@ Algunos de los endpoints REST más relevantes del sistema son los siguientes:
 - POST /api/auth/register para el registro de usuarios.  
 - GET /api/pantry para obtener los ingredientes de la despensa.  
 - POST /api/pantry para añadir ingredientes.  
--DELETE /api/pantry/{id} para eliminar ingredientes.  
+- DELETE /api/pantry/{id} para eliminar ingredientes.  
 - GET /api/recipes/suggest para la generación de recetas mediante Inteligencia Artificial.
 
 Los endpoints protegidos requieren autenticación mediante JWT.
