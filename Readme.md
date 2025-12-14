@@ -2,7 +2,7 @@
 
 Chefsito es una app web inteligente que te ayuda a llevar el control de tu despensa 
 y te sugiere recetas con ayuda de la Inteligencia Artificial.  
-Es una aplicación full-stack desarrollada como parte del Trabajo Fin de Grado (TFG).  
+  
 Su función principal es facilitar la gestión de los ingredientes que tienes en casa, 
 permitir crear un perfil culinario a tu medida y ofrecer recetas generadas automáticamente mediante IA, 
 considerando tus gustos, alergias y tipo de alimentación.
@@ -19,10 +19,10 @@ Aquí dejamos los pasos necesarios para que puedas ejecutar el proyecto en tu co
 -Angular CLI  
 -PostgreSQL
 
-Una cuenta de OpenAI y tu respectiva API Key  
+Una cuenta de OpenAI y la respectiva API Key  
 -(OPENAI_API_KEY)
 
-Puedes verificar que ya tienes todo instalado con los siguientes comandos:
+Puedes verificar que  tienes todo instalado con los siguientes comandos:
 
 -java -version  
 -mvn -version  
