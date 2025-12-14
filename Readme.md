@@ -40,23 +40,32 @@ A continuación se detallan los pasos necesarios para disponer de un entorno de 
 2. Configuración de la base de datos  
 *Crear la base de datos en PostgreSQL:
 
--CREATE DATABASE chefsito;
+- CREATE DATABASE chefsito;
 
-3. Configuración del backend
+3. Configuración del backend (entorno local)
 
-* Acceder al directorio del backend:
+Acceder al directorio del backend:
 
 - cd chefsito-backend
 
-* Configurar las siguientes variables de entorno:
+Configurar las propiedades de la aplicación en el archivo application.properties
+(local):
 
-- DB_HOST=localhost  
-- DB_PORT=5432  
-- DB_NAME=chefsito  
-- DB_USER=postgres  
-- DB_PASSWORD=tu_password  
-- OPENAI_API_KEY=tu_api_key  
-- SPRING_PROFILES_ACTIVE=local
+Base de datos PostgreSQL
+-spring.datasource.url=jdbc:postgresql://localhost:5432/chefsito
+-spring.datasource.username=admin
+-spring.datasource.password=admin
+
+API de OpenAI
+-openai.api.key=TU_API_KEY_DE_OPENAI
+
+Puerto del servidor
+-server.port=8080
+
+El resto de parámetros del backend
+(JPA, Hibernate, JWT, Swagger, logs e internacionalización) 
+ya se encuentran configurados en el proyecto y no requieren cambios adicionales 
+para la ejecución en entorno local.
 
 Ejecutar el backend:
 
